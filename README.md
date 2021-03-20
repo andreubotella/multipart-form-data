@@ -1,2 +1,2 @@
-A web-spec definition of `multipart/form-data` and related algorithms, meant for
-inclusion in the WHATWG standards.
+A web-spec definition of the `multipart/form-data` format and related
+algorithms, meant for inclusion in the WHATWG standards.

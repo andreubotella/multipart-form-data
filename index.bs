@@ -1,0 +1,143 @@
+<pre class='metadata'>
+Group: WHATWG
+H1: <code>multipart/form-data</code>
+Title: multipart/form-data
+Shortname: formdata
+Text Macro: TWITTER nope
+Abstract: A short description of your spec, one or two sentences.
+</pre>
+
+Introduction {#intro}
+=====================
+
+The <dfn export><code>multipart/form-data</code></dfn> format provides a way to encode a form's
+entry list, including binary files.
+
+<code>multipart/form-data</code> serializing {#serializing}
+===========================================================
+
+To <dfn export>generate a <code>multipart/form-data</code> boundary string</dfn>, return an
+[=implementation-defined=] byte sequence such that:
+
+* its length is greater or equal to 27 and lesser or equal to 70,
+* it is composed by bytes in the ranges 0x30 to 0x39, 0x41 to 0x5A, or 0x61 to 0x7A, inclusive
+    ([=ASCII alphanumeric=]), or which are 0x27 ('), 0x2D (-) or 0x5F (_),
+* part of it is randomly generated, with a minimum entropy of 95 bits.
+
+<p class="note">Previous definitions of the <a><code>multipart/form-data</code></a> boundary string
+<span class="allow-2119">required</span> it to not be present anywhere in the contents of the
+payload with which it is associated, although they allow for generating it probabilistically. Since
+this definition is separate from a payload, however, it has to specify a minimum entropy instead.
+[[RFC7578]] [[RFC2046]]
+
+<p class="note">If a user agent generates <a><code>multipart/form-data</code></a> boundary strings
+with a length of 27 and an entropy of 95 bits, given a payload made specifically to generate
+collisions with that user agent's boundary strings, the expected length of the payload before a
+collision is found is well over a yottabyte.
+
+<hr>
+
+The <dfn export><code>multipart/form-data</code> length</dfn> of an [=FormData/entry list=]
+|entries| and a boundary string |boundary|, with an optional [=/encoding=] |encoding| (default
+[=UTF-8=]) is the result of running these steps:
+
+1.  Set |encoding| to the result of [=getting an output encoding=] from |encoding|.
+1.  Let |length| be 6 + the length of |boundary|.
+1.  [=list/For each=] |entry| in |entries|:
+    1.  Let |name length| be the [=byte sequence/length=] of the result of <a>escaping a
+        <code>multipart/form-data</code> name</a> given |entry|'s [=FormData/entry/name=] and
+        |encoding|.
+    1.  Let |entry length| be 49 + the length of |boundary| + |name length|.
+    1.  If |entry|'s [=FormData/entry/value=] is a {{File}}:
+        1.  Let |file| be |entry|'s [=FormData/entry/value=].
+        1.  Let |filename length| be the [=byte sequence/length=] of the result of <a>escaping a
+            <code>multipart/form-data</code> name</a> given |file|'s {{File/name}} with |encoding|
+            and <a for="escape name">|isFilename|</a> set to true.
+        1.  Increase |entry length| by 29 + |filename length| + the length of |file|'s
+            {{Blob/type}} + |file|'s {{Blob/size}}.
+
+        Otherwise:
+        1.  Let |value| be |entry|'s [=FormData/entry/value=], with every occurrence of U+000D (CR)
+            not followed by U+000A (LF), and every occurrence of U+000A (LF) not preceded by U+000D
+            (CR), replaced by a string consisting of U+000D (CR) and U+000A (LF).
+        1.  Increase |entry length| by the length of the result of [=/encode|encoding=] |value| with
+            |encoding|.
+1.  Return |length|.
+
+<p class="note">The <a><code>multipart/form-data</code> length</a> is the length of the byte
+sequence that results from running the <a><code>multipart/form-data</code> serializer</a>. This is
+provided as a separate algorithm to make it possible to use ahead of time, without the need to read
+any files from the filesystem before their contents are needed.
+
+<p class="XXX">Do we need to define this in the spec? That seems way too error-prone. Can't we
+simply take the length of the serialization in spec-land, with a note saying that UAs can optimize
+with <code><var>file</var>.{{Blob/size}}</code>?
+
+<hr>
+
+The <dfn export><code>multipart/form-data</code> serializer</dfn> takes an [=FormData/entry list=]
+|entries| and a boundary string |boundary|, with an optional [=/encoding=] |encoding| (default
+[=UTF-8=]), and then runs these steps:
+
+1.  Set |encoding| to the result of [=getting an output encoding=] from |encoding|.
+1.  Let |output| be the empty byte sequence.
+1.  [=list/For each=] |entry| in |entries|:
+    1.  Let |name| be |entry|'s [=FormData/entry/name=].
+    1.  Append `<code>--</code>`, followed by |boundary|, followed by 0x0D 0x0A (CR LF), to
+        |output|.
+    1.  Append `<code>Content-Disposition: form-data; name="</code>`, followed by the result of
+        <a>escaping a <code>multipart/form-data</code> name</a> given |entry|'s
+        [=FormData/entry/name=] and |encoding|, followed by 0x22 ("), to |output|.
+    1.  If |entry|'s [=FormData/entry/value=] is a string:
+        1.  Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to |output|.
+        1.  Let |value| be |entry|'s [=FormData/entry/value=].
+        1.  Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every
+            occurrence of U+000A (LF) not preceded by U+000D (CR), in |value|, by a string
+            consisting of U+000D (CR) and U+000A (LF).
+        1.  Append the result of [=/encode|encoding=] |value| with |encoding|, converted to a byte
+            sequence, to |output|.
+
+        Otherwise:
+        1.  Let |file| be |entry|'s [=FormData/entry/value=].
+        1.  [=Assert=]: |file| is a {{File}}.
+        1.  Append `<code>; filename="</code>`, followed by the result of <a>escaping a
+            <code>multipart/form-data</code> name</a> given |file|'s {{File/name}} with |encoding|
+            and <a for="escape name">|isFilename|</a> set to true, followed by 0x22 0x0D 0x0A (" CR
+            LF), to |output|.
+        1.  Append `<code>Content-Type: </code>`, followed by the result of [=isomorphic encoding=]
+            |file|'s {{Blob/type}}, to |output|.
+        1.  Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to |output|.
+        1.  Append <span class=XXX>|file|'s underlying byte sequence</span> to |output|.
+    1.  Append 0x0D 0x0A (CR LF) to |output|.
+1.  Append `<code>--</code>`, followed by |boundary|, followed by `<code>--</code>`, followed by
+    0x0D 0x0A (CR LF), to |output|.
+1.  Return |output|.
+
+<p class="XXX">Or should this enqueue chunks into a {{ReadableStream}} instead?
+
+<p class="XXX">This matches the behavior Gecko will have once <a
+href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a> is closed, modulo the
+non-standard handling of directories. I haven't checked Blink/WebKit.
+
+To <dfn>escape a <code>multipart/form-data</code> name</dfn> with a string |name|, an optional
+[=/encoding=] |encoding| (default [=UTF-8=]) and an optional boolean <dfn for="escape
+name">|isFilename|</dfn> (default false):
+
+1.  If |isFilename| is true:
+    1.  Set |name| to the result of [=string/converting=] |name| into a [=scalar value string=].
+
+    Otherwise:
+    1.  Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every occurrence of
+        U+000A (LF) not preceded by U+000D (CR), in |name|, by a string consisting of U+000D (CR)
+        and U+000A (LF).
+1.  Let |encoded| be the result of [=/encode|encoding=] |name| with |encoding|, converted to a byte
+    sequence.
+1.  Replace every 0x0A (LF) bytes in |encoded| with the byte sequence `<code>%0A</code>`, 0x0D (CR)
+    with `<code>%0D</code>` and 0x22 (") with `<code>%22</code>`.
+1.  Return |encoded|.
+
+
+<code>multipart/form-data</code> parsing {#parsing}
+===================================================
+
+<p class="XXX">🤷

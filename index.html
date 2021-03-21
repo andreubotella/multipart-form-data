@@ -7,36 +7,31 @@
   <link crossorigin href="https://resources.whatwg.org/spec.css" rel="stylesheet">
   <link crossorigin href="https://resources.whatwg.org/standard.css" rel="stylesheet">
   <link crossorigin href="https://resources.whatwg.org/standard-shared-with-dev.css" rel="stylesheet">
-  <link crossorigin href="https://resources.whatwg.org/logo-formdata.svg" rel="icon">
+  <link crossorigin href="https://resources.whatwg.org/logo.svg" rel="icon">
 <script async crossorigin src="https://resources.whatwg.org/file-issue.js"></script>
 <script async crossorigin src="https://resources.whatwg.org/commit-snapshot-shortcut-key.js"></script>
 <script crossorigin defer src="https://resources.whatwg.org/standard-mdn-annos.js"></script>
   <meta content="Bikeshed version b94c7e755, updated Fri Feb 19 16:28:59 2021 -0800" name="generator">
- <body class="h-entry status-LS">
+ <body class="h-entry status-DREAM">
   <div class="head">
-    <a class="logo" href="https://whatwg.org/"> <img alt="WHATWG" crossorigin height="100" src="https://resources.whatwg.org/logo-formdata.svg"> </a> 
+    <a class="logo" href="https://whatwg.org/"> <img alt="WHATWG" crossorigin height="100" src="https://resources.whatwg.org/logo.svg"> </a> 
    <hgroup>
     <h1 class="p-name no-ref" id="title"><code>multipart/form-data</code></h1>
-    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Living Standard — Last Updated <time class="dt-updated" datetime="2021-03-20">20 March 2021</time></span></h2>
+    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-03-21">21 March 2021</time></span></h2>
    </hgroup>
    <div data-fill-with="spec-metadata">
     <dl>
-     <dt>Participate:
-     <dd><a href="https://github.com/whatwg/formdata">GitHub whatwg/formdata</a> (<a href="https://github.com/whatwg/formdata/issues/new">new issue</a>, <a href="https://github.com/whatwg/formdata/issues">open issues</a>)
-     <dd><a href="https://wiki.whatwg.org/wiki/IRC">IRC: #whatwg on Freenode</a>
-     <dt>Commits:
-     <dd><a href="https://github.com/whatwg/formdata/commits">GitHub whatwg/formdata/commits</a>
-     <dd><a copy href="/commit-snapshots/LOCAL" id="commit-snapshot-link">Snapshot as of this commit</a>
-     <dd><a href="https://twitter.com/nope">@nope</a>
-     <dt>Tests:
-     <dd><a href="https://github.com/web-platform-tests/wpt/tree/master/formdata">web-platform-tests formdata/</a> (<a href="https://github.com/web-platform-tests/wpt/labels/formdata">ongoing work</a>)
+     <dt>Repository:
+     <dd><a href="https://github.com/andreubotella/multipart-form-data">GitHub</a>
     </dl>
    </div>
    <div data-fill-with="warning"></div>
   </div>
   <div class="p-summary" data-fill-with="abstract">
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
-   <p>A short description of your spec, one or two sentences.</p>
+   <p>A web-spec definition of the <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data"><code>multipart/form-data</code></a> format and related
+
+          algorithms, meant for inclusion in the WHATWG standards.</p>
   </div>
   <nav data-fill-with="table-of-contents" id="toc">
    <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
@@ -74,10 +69,10 @@ entry list, including binary files.</p>
     <li data-md>
      <p>part of it is randomly generated, with a minimum entropy of 95 bits.</p>
    </ul>
-   <p class="note" role="note">Previous definitions of the <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data"><code>multipart/form-data</code></a> boundary string <span class="allow-2119">required</span> it to not be present anywhere in the contents of the
+   <p class="note" role="note">Previous definitions of the <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data①"><code>multipart/form-data</code></a> boundary string <span class="allow-2119">required</span> it to not be present anywhere in the contents of the
 payload with which it is associated, although they allow for generating it probabilistically. Since
 this definition is separate from a payload, however, it has to specify a minimum entropy instead. <a data-link-type="biblio" href="#biblio-rfc7578">[RFC7578]</a> <a data-link-type="biblio" href="#biblio-rfc2046">[RFC2046]</a> </p>
-   <p class="note" role="note">If a user agent generates <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data①"><code>multipart/form-data</code></a> boundary strings
+   <p class="note" role="note">If a user agent generates <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data②"><code>multipart/form-data</code></a> boundary strings
 with a length of 27 and an entropy of 95 bits, given a payload made specifically to generate
 collisions with that user agent’s boundary strings, the expected length of the payload before a
 collision is found is well over a yottabyte. </p>
@@ -418,7 +413,7 @@ if ("serviceWorker" in navigator) {
   <aside class="dfn-panel" data-for="multipart-form-data">
    <b><a href="#multipart-form-data">#multipart-form-data</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-multipart-form-data">2. multipart/form-data serializing</a> <a href="#ref-for-multipart-form-data①">(2)</a>
+    <li><a href="#ref-for-multipart-form-data①">2. multipart/form-data serializing</a> <a href="#ref-for-multipart-form-data②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="multipart-form-data-length">

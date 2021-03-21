@@ -3,8 +3,13 @@ Group: WHATWG
 H1: <code>multipart/form-data</code>
 Title: multipart/form-data
 Shortname: formdata
-Text Macro: TWITTER nope
-Abstract: A short description of your spec, one or two sentences.
+Status: DREAM
+Text Macro: TWITTER (unused)
+Text Macro: LOGO https://resources.whatwg.org/logo.svg
+Metadata Include: Participate off, Commits off, Tests off
+!Repository: <a href=https://github.com/andreubotella/multipart-form-data>GitHub</a>
+Abstract: A web-spec definition of the <a><code>multipart/form-data</code></a> format and related
+          algorithms, meant for inclusion in the WHATWG standards.
 </pre>
 
 Introduction {#intro}

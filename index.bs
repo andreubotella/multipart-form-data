@@ -94,7 +94,7 @@ any files from the filesystem before their contents are needed.
 
 <p class="XXX">Do we need to define this in the spec? That seems way too error-prone. Can't we
 simply take the length of the serialization in spec-land, with a note saying that UAs can optimize
-with <code><var>file</var>.{{Blob/size}}</code>?
+with <code highlight="js"><var>file</var>.<a attribute for="Blob">size</a></code>?
 
 <hr>
 
@@ -166,4 +166,24 @@ name">|isFilename|</dfn> (default false):
 <code>multipart/form-data</code> parsing {#parsing}
 ===================================================
 
-<p class="XXX">🤷
+<div class="XXX">
+  <p>🤷
+
+  <p>Gecko and Chromium seem to have wildly different behaviors for
+  <code highlight="js"><a interface>Body</a>.prototype.<a method for="Body">formData</a>()</code>,
+  and there's also a Web Extensions API that parses <a><code>multipart/form-data</code></a> and that
+  in both Gecko and Chromium seems to be completely independent from the parser in {{Body}} (see <a
+  href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>):
+
+  <xmp class="lang-js" style="color: #666666">
+    chrome.webRequest.onBeforeRequest.addListener(
+      (details) => {
+        // Returns an object mapping names to an array of values represented by
+        // either the string value or by the file's filename.
+        console.log(details.requestBody.formData);
+      },
+      {urls: ["<all_urls>"]},
+      ["requestBody"]
+    );
+  </xmp>
+</div>

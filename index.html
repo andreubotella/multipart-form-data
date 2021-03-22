@@ -17,7 +17,7 @@
     <a class="logo" href="https://whatwg.org/"> <img alt="WHATWG" crossorigin height="100" src="https://resources.whatwg.org/logo.svg"> </a> 
    <hgroup>
     <h1 class="p-name no-ref" id="title"><code>multipart/form-data</code></h1>
-    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-03-21">21 March 2021</time></span></h2>
+    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-03-22">22 March 2021</time></span></h2>
    </hgroup>
    <div data-fill-with="spec-metadata">
     <dl>
@@ -56,8 +56,13 @@
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
-   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="multipart-form-data"><code>multipart/form-data</code></dfn> format provides a way to encode a form’s
-entry list, including binary files.</p>
+   <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="entry-list">entry list</dfn> is a list of <a data-link-type="dfn" href="#entry-list-entry" id="ref-for-entry-list-entry">entries</a>, typically representing the
+contents of a form. An <dfn class="dfn-paneled" data-dfn-for="entry list" data-dfn-type="dfn" data-export id="entry-list-entry">entry</dfn> is a tuple consisting of a <dfn class="dfn-paneled" data-dfn-for="entry list" data-dfn-type="dfn" data-export id="entry-list-name">name</dfn> (a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#scalar-value-string" id="ref-for-scalar-value-string">scalar value string</a>) and a <dfn class="dfn-paneled" data-dfn-for="entry
+list" data-dfn-type="dfn" data-export id="entry-list-value">value</dfn> (either a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#scalar-value-string" id="ref-for-scalar-value-string①">scalar value string</a> or a <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file">File</a></code>).</p>
+   <p class="XXX">These definitions currently live in the XHR spec as part of the <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata">FormData</a></code> definition, but they should probably be moved to HTML. </p>
+   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="multipart-form-data"><code>multipart/form-data</code></dfn> format provides a way to encode an <a data-link-type="dfn" href="#entry-list" id="ref-for-entry-list">entry
+list</a>, which, unlike the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-urlencoded" id="ref-for-concept-urlencoded"><code>application/x-www-form-urlencoded</code></a> format, can transmit
+file contents.</p>
    <h2 class="heading settled" data-level="2" id="serializing"><span class="secno">2. </span><span class="content"><code>multipart/form-data</code> serializing</span><a class="self-link" href="#serializing"></a></h2>
    <p>To <dfn data-dfn-type="dfn" data-export id="generate-a-multipart-form-data-boundary-string">generate a <code>multipart/form-data</code> boundary string<a class="self-link" href="#generate-a-multipart-form-data-boundary-string"></a></dfn>, return an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined">implementation-defined</a> byte sequence such that:</p>
    <ul>
@@ -77,7 +82,9 @@ with a length of 27 and an entropy of 95 bits, given a payload made specifically
 collisions with that user agent’s boundary strings, the expected length of the payload before a
 collision is found is well over a yottabyte. </p>
    <hr>
-   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="multipart-form-data-length"><code>multipart/form-data</code> length</dfn> of an <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-list" id="ref-for-concept-formdata-entry-list">entry list</a> <var>entries</var> and a boundary string <var>boundary</var>, with an optional <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encoding" id="ref-for-encoding">encoding</a> <var>encoding</var> (default <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8" id="ref-for-utf-8">UTF-8</a>) is the result of running these steps:</p>
+   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="multipart-form-data-length"><code>multipart/form-data</code> length</dfn> of an <a data-link-type="dfn" href="#entry-list" id="ref-for-entry-list①">entry list</a> <var>entries</var> and a
+boundary string <var>boundary</var>, with an optional <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encoding" id="ref-for-encoding">encoding</a> <var>encoding</var> (default <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8" id="ref-for-utf-8">UTF-8</a>) is the
+result of running these steps:</p>
    <ol>
     <li data-md>
      <p>Set <var>encoding</var> to the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#get-an-output-encoding" id="ref-for-get-an-output-encoding">getting an output encoding</a> from <var>encoding</var>.</p>
@@ -87,14 +94,14 @@ collision is found is well over a yottabyte. </p>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate">For each</a> <var>entry</var> in <var>entries</var>:</p>
      <ol>
       <li data-md>
-       <p>Let <var>name length</var> be the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence-length" id="ref-for-byte-sequence-length">length</a> of the result of <a data-link-type="dfn" href="#escape-a-multipart-form-data-name" id="ref-for-escape-a-multipart-form-data-name">escaping a <code>multipart/form-data</code> name</a> given <var>entry</var>’s <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-name" id="ref-for-concept-formdata-entry-name">name</a> and <var>encoding</var>.</p>
+       <p>Let <var>name length</var> be the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence-length" id="ref-for-byte-sequence-length">length</a> of the result of <a data-link-type="dfn" href="#escape-a-multipart-form-data-name" id="ref-for-escape-a-multipart-form-data-name">escaping a <code>multipart/form-data</code> name</a> given <var>entry</var>’s <a data-link-type="dfn" href="#entry-list-name" id="ref-for-entry-list-name">name</a> and <var>encoding</var>.</p>
       <li data-md>
        <p>Let <var>entry length</var> be 49 + the length of <var>boundary</var> + <var>name length</var>.</p>
       <li data-md>
-       <p>If <var>entry</var>’s <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-value" id="ref-for-concept-formdata-entry-value">value</a> is a <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file">File</a></code>:</p>
+       <p>If <var>entry</var>’s <a data-link-type="dfn" href="#entry-list-value" id="ref-for-entry-list-value">value</a> is a <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file①">File</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Let <var>file</var> be <var>entry</var>’s <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-value" id="ref-for-concept-formdata-entry-value①">value</a>.</p>
+         <p>Let <var>file</var> be <var>entry</var>’s <a data-link-type="dfn" href="#entry-list-value" id="ref-for-entry-list-value①">value</a>.</p>
         <li data-md>
          <p>Let <var>filename length</var> be the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence-length" id="ref-for-byte-sequence-length①">length</a> of the result of <a data-link-type="dfn" href="#escape-a-multipart-form-data-name" id="ref-for-escape-a-multipart-form-data-name①">escaping a <code>multipart/form-data</code> name</a> given <var>file</var>’s <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-name" id="ref-for-dfn-name">name</a></code> with <var>encoding</var> and <a data-link-type="dfn" href="#escape-name-isfilename" id="ref-for-escape-name-isfilename"><var>isFilename</var></a> set to true.</p>
         <li data-md>
@@ -103,8 +110,8 @@ collision is found is well over a yottabyte. </p>
        <p>Otherwise:</p>
        <ol>
         <li data-md>
-         <p>Let <var>value</var> be <var>entry</var>’s <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-value" id="ref-for-concept-formdata-entry-value②">value</a>, with every occurrence of U+000D (CR)
-not followed by U+000A (LF), and every occurrence of U+000A (LF) not preceded by U+000D
+         <p>Let <var>value</var> be <var>entry</var>’s <a data-link-type="dfn" href="#entry-list-value" id="ref-for-entry-list-value②">value</a>, with every occurrence of U+000D (CR) not
+followed by U+000A (LF), and every occurrence of U+000A (LF) not preceded by U+000D
 (CR), replaced by a string consisting of U+000D (CR) and U+000A (LF).</p>
         <li data-md>
          <p>Increase <var>entry length</var> by the length of the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encode" id="ref-for-encode">encoding</a> <var>value</var> with <var>encoding</var>.</p>
@@ -121,7 +128,8 @@ any files from the filesystem before their contents are needed. </p>
 simply take the length of the serialization in spec-land, with a note saying that UAs can optimize
 with <code><var>file</var>.<code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-size" id="ref-for-dfn-size①">size</a></code></code>? </p>
    <hr>
-   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="multipart-form-data-serializer"><code>multipart/form-data</code> serializer</dfn> takes an <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-list" id="ref-for-concept-formdata-entry-list①">entry list</a> <var>entries</var> and a boundary string <var>boundary</var>, with an optional <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encoding" id="ref-for-encoding①">encoding</a> <var>encoding</var> (default <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8" id="ref-for-utf-8①">UTF-8</a>), and then runs these steps:</p>
+   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="multipart-form-data-serializer"><code>multipart/form-data</code> serializer</dfn> takes an <a data-link-type="dfn" href="#entry-list" id="ref-for-entry-list②">entry list</a> <var>entries</var> and a boundary string <var>boundary</var>, with an optional <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encoding" id="ref-for-encoding①">encoding</a> <var>encoding</var> (default <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8" id="ref-for-utf-8①">UTF-8</a>), and
+then runs these steps:</p>
    <ol>
     <li data-md>
      <p>Set <var>encoding</var> to the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#get-an-output-encoding" id="ref-for-get-an-output-encoding①">getting an output encoding</a> from <var>encoding</var>.</p>
@@ -131,18 +139,18 @@ with <code><var>file</var>.<code class="idl"><a data-link-type="idl" href="https
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate①">For each</a> <var>entry</var> in <var>entries</var>:</p>
      <ol>
       <li data-md>
-       <p>Let <var>name</var> be <var>entry</var>’s <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-name" id="ref-for-concept-formdata-entry-name①">name</a>.</p>
+       <p>Let <var>name</var> be <var>entry</var>’s <a data-link-type="dfn" href="#entry-list-name" id="ref-for-entry-list-name①">name</a>.</p>
       <li data-md>
        <p>Append `<code>--</code>`, followed by <var>boundary</var>, followed by 0x0D 0x0A (CR LF), to <var>output</var>.</p>
       <li data-md>
-       <p>Append `<code>Content-Disposition: form-data; name="</code>`, followed by the result of <a data-link-type="dfn" href="#escape-a-multipart-form-data-name" id="ref-for-escape-a-multipart-form-data-name②">escaping a <code>multipart/form-data</code> name</a> given <var>entry</var>’s <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-name" id="ref-for-concept-formdata-entry-name②">name</a> and <var>encoding</var>, followed by 0x22 ("), to <var>output</var>.</p>
+       <p>Append `<code>Content-Disposition: form-data; name="</code>`, followed by the result of <a data-link-type="dfn" href="#escape-a-multipart-form-data-name" id="ref-for-escape-a-multipart-form-data-name②">escaping a <code>multipart/form-data</code> name</a> given <var>entry</var>’s <a data-link-type="dfn" href="#entry-list-name" id="ref-for-entry-list-name②">name</a> and <var>encoding</var>, followed by 0x22 ("), to <var>output</var>.</p>
       <li data-md>
-       <p>If <var>entry</var>’s <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-value" id="ref-for-concept-formdata-entry-value③">value</a> is a string:</p>
+       <p>If <var>entry</var>’s <a data-link-type="dfn" href="#entry-list-value" id="ref-for-entry-list-value③">value</a> is a string:</p>
        <ol>
         <li data-md>
          <p>Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to <var>output</var>.</p>
         <li data-md>
-         <p>Let <var>value</var> be <var>entry</var>’s <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-value" id="ref-for-concept-formdata-entry-value④">value</a>.</p>
+         <p>Let <var>value</var> be <var>entry</var>’s <a data-link-type="dfn" href="#entry-list-value" id="ref-for-entry-list-value④">value</a>.</p>
         <li data-md>
          <p>Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every
 occurrence of U+000A (LF) not preceded by U+000D (CR), in <var>value</var>, by a string
@@ -154,9 +162,9 @@ sequence, to <var>output</var>.</p>
        <p>Otherwise:</p>
        <ol>
         <li data-md>
-         <p>Let <var>file</var> be <var>entry</var>’s <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry-value" id="ref-for-concept-formdata-entry-value⑤">value</a>.</p>
+         <p>Let <var>file</var> be <var>entry</var>’s <a data-link-type="dfn" href="#entry-list-value" id="ref-for-entry-list-value⑤">value</a>.</p>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert">Assert</a>: <var>file</var> is a <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file①">File</a></code>.</p>
+         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert">Assert</a>: <var>file</var> is a <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file②">File</a></code>.</p>
         <li data-md>
          <p>Append `<code>; filename="</code>`, followed by the result of <a data-link-type="dfn" href="#escape-a-multipart-form-data-name" id="ref-for-escape-a-multipart-form-data-name③">escaping a <code>multipart/form-data</code> name</a> given <var>file</var>’s <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-name" id="ref-for-dfn-name①">name</a></code> with <var>encoding</var> and <a data-link-type="dfn" href="#escape-name-isfilename" id="ref-for-escape-name-isfilename①"><var>isFilename</var></a> set to true, followed by 0x22 0x0D 0x0A (" CR
 LF), to <var>output</var>.</p>
@@ -186,7 +194,7 @@ name" data-dfn-type="dfn" data-noexport id="escape-name-isfilename"><var>isFilen
      <p>If <var>isFilename</var> is true:</p>
      <ol>
       <li data-md>
-       <p>Set <var>name</var> to the result of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#javascript-string-convert" id="ref-for-javascript-string-convert">converting</a> <var>name</var> into a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#scalar-value-string" id="ref-for-scalar-value-string">scalar value string</a>.</p>
+       <p>Set <var>name</var> to the result of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#javascript-string-convert" id="ref-for-javascript-string-convert">converting</a> <var>name</var> into a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#scalar-value-string" id="ref-for-scalar-value-string②">scalar value string</a>.</p>
      </ol>
      <p>Otherwise:</p>
      <ol>
@@ -219,12 +227,16 @@ if ("serviceWorker" in navigator) {
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
+   <li><a href="#entry-list-entry">entry</a><span>, in §1</span>
+   <li><a href="#entry-list">entry list</a><span>, in §1</span>
    <li><a href="#escape-a-multipart-form-data-name">escape a multipart/form-data name</a><span>, in §2</span>
    <li><a href="#generate-a-multipart-form-data-boundary-string">generate a multipart/form-data boundary string</a><span>, in §2</span>
    <li><a href="#escape-name-isfilename">isFilename</a><span>, in §2</span>
    <li><a href="#multipart-form-data">multipart/form-data</a><span>, in §1</span>
    <li><a href="#multipart-form-data-length">multipart/form-data length</a><span>, in §2</span>
    <li><a href="#multipart-form-data-serializer">multipart/form-data serializer</a><span>, in §2</span>
+   <li><a href="#entry-list-name">name</a><span>, in §1</span>
+   <li><a href="#entry-list-value">value</a><span>, in §1</span>
   </ul>
   <aside class="dfn-panel" data-for="term-for-encode">
    <a href="https://encoding.spec.whatwg.org/#encode">https://encoding.spec.whatwg.org/#encode</a><b>Referenced in:</b>
@@ -253,7 +265,8 @@ if ("serviceWorker" in navigator) {
   <aside class="dfn-panel" data-for="term-for-dfn-file">
    <a href="https://w3c.github.io/FileAPI/#dfn-file">https://w3c.github.io/FileAPI/#dfn-file</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dfn-file">2. multipart/form-data serializing</a> <a href="#ref-for-dfn-file①">(2)</a>
+    <li><a href="#ref-for-dfn-file">1. Introduction</a>
+    <li><a href="#ref-for-dfn-file①">2. multipart/form-data serializing</a> <a href="#ref-for-dfn-file②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dfn-name">
@@ -319,7 +332,8 @@ if ("serviceWorker" in navigator) {
   <aside class="dfn-panel" data-for="term-for-scalar-value-string">
    <a href="https://infra.spec.whatwg.org/#scalar-value-string">https://infra.spec.whatwg.org/#scalar-value-string</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-scalar-value-string">2. multipart/form-data serializing</a>
+    <li><a href="#ref-for-scalar-value-string">1. Introduction</a> <a href="#ref-for-scalar-value-string①">(2)</a>
+    <li><a href="#ref-for-scalar-value-string②">2. multipart/form-data serializing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-readablestream">
@@ -328,22 +342,16 @@ if ("serviceWorker" in navigator) {
     <li><a href="#ref-for-readablestream">2. multipart/form-data serializing</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-formdata-entry-list">
-   <a href="https://xhr.spec.whatwg.org/#concept-formdata-entry-list">https://xhr.spec.whatwg.org/#concept-formdata-entry-list</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-concept-urlencoded">
+   <a href="https://url.spec.whatwg.org/#concept-urlencoded">https://url.spec.whatwg.org/#concept-urlencoded</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-concept-formdata-entry-list">2. multipart/form-data serializing</a> <a href="#ref-for-concept-formdata-entry-list①">(2)</a>
+    <li><a href="#ref-for-concept-urlencoded">1. Introduction</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-formdata-entry-name">
-   <a href="https://xhr.spec.whatwg.org/#concept-formdata-entry-name">https://xhr.spec.whatwg.org/#concept-formdata-entry-name</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-formdata">
+   <a href="https://xhr.spec.whatwg.org/#formdata">https://xhr.spec.whatwg.org/#formdata</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-concept-formdata-entry-name">2. multipart/form-data serializing</a> <a href="#ref-for-concept-formdata-entry-name①">(2)</a> <a href="#ref-for-concept-formdata-entry-name②">(3)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-formdata-entry-value">
-   <a href="https://xhr.spec.whatwg.org/#concept-formdata-entry-value">https://xhr.spec.whatwg.org/#concept-formdata-entry-value</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-concept-formdata-entry-value">2. multipart/form-data serializing</a> <a href="#ref-for-concept-formdata-entry-value①">(2)</a> <a href="#ref-for-concept-formdata-entry-value②">(3)</a> <a href="#ref-for-concept-formdata-entry-value③">(4)</a> <a href="#ref-for-concept-formdata-entry-value④">(5)</a> <a href="#ref-for-concept-formdata-entry-value⑤">(6)</a>
+    <li><a href="#ref-for-formdata">1. Introduction</a>
    </ul>
   </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
@@ -382,11 +390,14 @@ if ("serviceWorker" in navigator) {
      <li><span class="dfn-paneled" id="term-for-readablestream">ReadableStream</span>
     </ul>
    <li>
+    <a data-link-type="biblio">[URL]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-concept-urlencoded">application/x-www-form-urlencoded</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[XHR]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="term-for-concept-formdata-entry-list">entry list</span>
-     <li><span class="dfn-paneled" id="term-for-concept-formdata-entry-name">name</span>
-     <li><span class="dfn-paneled" id="term-for-concept-formdata-entry-value">value</span>
+     <li><span class="dfn-paneled" id="term-for-formdata">FormData</span>
     </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
@@ -400,6 +411,8 @@ if ("serviceWorker" in navigator) {
    <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/">Infra Standard</a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
    <dt id="biblio-streams">[STREAMS]
    <dd>Adam Rice; Domenic Denicola; 吉野剛史 (Takeshi Yoshino). <a href="https://streams.spec.whatwg.org/">Streams Standard</a>. Living Standard. URL: <a href="https://streams.spec.whatwg.org/">https://streams.spec.whatwg.org/</a>
+   <dt id="biblio-url">[URL]
+   <dd>Anne van Kesteren. <a href="https://url.spec.whatwg.org/">URL Standard</a>. Living Standard. URL: <a href="https://url.spec.whatwg.org/">https://url.spec.whatwg.org/</a>
    <dt id="biblio-xhr">[XHR]
    <dd>Anne van Kesteren. <a href="https://xhr.spec.whatwg.org/">XMLHttpRequest Standard</a>. Living Standard. URL: <a href="https://xhr.spec.whatwg.org/">https://xhr.spec.whatwg.org/</a>
   </dl>
@@ -410,6 +423,31 @@ if ("serviceWorker" in navigator) {
    <dt id="biblio-rfc7578">[RFC7578]
    <dd>L. Masinter. <a href="https://datatracker.ietf.org/doc/html/rfc7578">Returning Values from Forms: multipart/form-data</a>. July 2015. Proposed Standard. URL: <a href="https://datatracker.ietf.org/doc/html/rfc7578">https://datatracker.ietf.org/doc/html/rfc7578</a>
   </dl>
+  <aside class="dfn-panel" data-for="entry-list">
+   <b><a href="#entry-list">#entry-list</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-entry-list">1. Introduction</a>
+    <li><a href="#ref-for-entry-list①">2. multipart/form-data serializing</a> <a href="#ref-for-entry-list②">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="entry-list-entry">
+   <b><a href="#entry-list-entry">#entry-list-entry</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-entry-list-entry">1. Introduction</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="entry-list-name">
+   <b><a href="#entry-list-name">#entry-list-name</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-entry-list-name">2. multipart/form-data serializing</a> <a href="#ref-for-entry-list-name①">(2)</a> <a href="#ref-for-entry-list-name②">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="entry-list-value">
+   <b><a href="#entry-list-value">#entry-list-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-entry-list-value">2. multipart/form-data serializing</a> <a href="#ref-for-entry-list-value①">(2)</a> <a href="#ref-for-entry-list-value②">(3)</a> <a href="#ref-for-entry-list-value③">(4)</a> <a href="#ref-for-entry-list-value④">(5)</a> <a href="#ref-for-entry-list-value⑤">(6)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="multipart-form-data">
    <b><a href="#multipart-form-data">#multipart-form-data</a></b><b>Referenced in:</b>
    <ul>

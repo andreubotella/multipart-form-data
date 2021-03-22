@@ -15,8 +15,17 @@ Abstract: A web-spec definition of the <a><code>multipart/form-data</code></a> f
 Introduction {#intro}
 =====================
 
-The <dfn export><code>multipart/form-data</code></dfn> format provides a way to encode a form's
-entry list, including binary files.
+An <dfn export>entry list</dfn> is a list of [=entry list/entries=], typically representing the
+contents of a form. An <dfn export for="entry list">entry</dfn> is a tuple consisting of a <dfn
+export for="entry list">name</dfn> (a [=scalar value string=]) and a <dfn export for="entry
+list">value</dfn> (either a [=scalar value string=] or a {{File}}).
+
+<p class="XXX">These definitions currently live in the XHR spec as part of the {{FormData}}
+definition, but they should probably be moved to HTML.
+
+The <dfn export><code>multipart/form-data</code></dfn> format provides a way to encode an [=entry
+list=], which, unlike the <a><code>application/x-www-form-urlencoded</code></a> format, can transmit
+file contents.
 
 <code>multipart/form-data</code> serializing {#serializing}
 ===========================================================
@@ -42,19 +51,19 @@ collision is found is well over a yottabyte.
 
 <hr>
 
-The <dfn export><code>multipart/form-data</code> length</dfn> of an [=FormData/entry list=]
-|entries| and a boundary string |boundary|, with an optional [=/encoding=] |encoding| (default
-[=UTF-8=]) is the result of running these steps:
+The <dfn export><code>multipart/form-data</code> length</dfn> of an [=entry list=] |entries| and a
+boundary string |boundary|, with an optional [=/encoding=] |encoding| (default [=UTF-8=]) is the
+result of running these steps:
 
 1.  Set |encoding| to the result of [=getting an output encoding=] from |encoding|.
 1.  Let |length| be 6 + the length of |boundary|.
 1.  [=list/For each=] |entry| in |entries|:
     1.  Let |name length| be the [=byte sequence/length=] of the result of <a>escaping a
-        <code>multipart/form-data</code> name</a> given |entry|'s [=FormData/entry/name=] and
+        <code>multipart/form-data</code> name</a> given |entry|'s [=entry list/name=] and
         |encoding|.
     1.  Let |entry length| be 49 + the length of |boundary| + |name length|.
-    1.  If |entry|'s [=FormData/entry/value=] is a {{File}}:
-        1.  Let |file| be |entry|'s [=FormData/entry/value=].
+    1.  If |entry|'s [=entry list/value=] is a {{File}}:
+        1.  Let |file| be |entry|'s [=entry list/value=].
         1.  Let |filename length| be the [=byte sequence/length=] of the result of <a>escaping a
             <code>multipart/form-data</code> name</a> given |file|'s {{File/name}} with |encoding|
             and <a for="escape name">|isFilename|</a> set to true.
@@ -62,8 +71,8 @@ The <dfn export><code>multipart/form-data</code> length</dfn> of an [=FormData/e
             {{Blob/type}} + |file|'s {{Blob/size}}.
 
         Otherwise:
-        1.  Let |value| be |entry|'s [=FormData/entry/value=], with every occurrence of U+000D (CR)
-            not followed by U+000A (LF), and every occurrence of U+000A (LF) not preceded by U+000D
+        1.  Let |value| be |entry|'s [=entry list/value=], with every occurrence of U+000D (CR) not
+            followed by U+000A (LF), and every occurrence of U+000A (LF) not preceded by U+000D
             (CR), replaced by a string consisting of U+000D (CR) and U+000A (LF).
         1.  Increase |entry length| by the length of the result of [=/encode|encoding=] |value| with
             |encoding|.
@@ -80,22 +89,22 @@ with <code><var>file</var>.{{Blob/size}}</code>?
 
 <hr>
 
-The <dfn export><code>multipart/form-data</code> serializer</dfn> takes an [=FormData/entry list=]
-|entries| and a boundary string |boundary|, with an optional [=/encoding=] |encoding| (default
-[=UTF-8=]), and then runs these steps:
+The <dfn export><code>multipart/form-data</code> serializer</dfn> takes an [=entry list=] |entries|
+and a boundary string |boundary|, with an optional [=/encoding=] |encoding| (default [=UTF-8=]), and
+then runs these steps:
 
 1.  Set |encoding| to the result of [=getting an output encoding=] from |encoding|.
 1.  Let |output| be the empty byte sequence.
 1.  [=list/For each=] |entry| in |entries|:
-    1.  Let |name| be |entry|'s [=FormData/entry/name=].
+    1.  Let |name| be |entry|'s [=entry list/name=].
     1.  Append `<code>--</code>`, followed by |boundary|, followed by 0x0D 0x0A (CR LF), to
         |output|.
     1.  Append `<code>Content-Disposition: form-data; name="</code>`, followed by the result of
         <a>escaping a <code>multipart/form-data</code> name</a> given |entry|'s
-        [=FormData/entry/name=] and |encoding|, followed by 0x22 ("), to |output|.
-    1.  If |entry|'s [=FormData/entry/value=] is a string:
+        [=entry list/name=] and |encoding|, followed by 0x22 ("), to |output|.
+    1.  If |entry|'s [=entry list/value=] is a string:
         1.  Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to |output|.
-        1.  Let |value| be |entry|'s [=FormData/entry/value=].
+        1.  Let |value| be |entry|'s [=entry list/value=].
         1.  Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every
             occurrence of U+000A (LF) not preceded by U+000D (CR), in |value|, by a string
             consisting of U+000D (CR) and U+000A (LF).
@@ -103,7 +112,7 @@ The <dfn export><code>multipart/form-data</code> serializer</dfn> takes an [=For
             sequence, to |output|.
 
         Otherwise:
-        1.  Let |file| be |entry|'s [=FormData/entry/value=].
+        1.  Let |file| be |entry|'s [=entry list/value=].
         1.  [=Assert=]: |file| is a {{File}}.
         1.  Append `<code>; filename="</code>`, followed by the result of <a>escaping a
             <code>multipart/form-data</code> name</a> given |file|'s {{File/name}} with |encoding|

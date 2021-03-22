@@ -129,7 +129,7 @@ provided as a separate algorithm to make it possible to use ahead of time, witho
 any files from the filesystem before their contents are needed. </p>
    <p class="XXX">Do we need to define this in the spec? That seems way too error-prone. Can’t we
 simply take the length of the serialization in spec-land, with a note saying that UAs can optimize
-with <code><var>file</var>.<code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-size" id="ref-for-dfn-size①">size</a></code></code>? </p>
+with <code class="highlight"><var>file</var><c- p>.</c-><a class="idl-code" data-link-type="attribute" href="https://w3c.github.io/FileAPI/#dfn-size" id="ref-for-dfn-size①">size</a></code>? </p>
    <hr>
    <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="multipart-form-data-serializer"><code>multipart/form-data</code> serializer</dfn> takes an <a data-link-type="dfn" href="#entry-list" id="ref-for-entry-list②">entry list</a> <var>entries</var> and a boundary string <var>boundary</var>, with an optional <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encoding" id="ref-for-encoding①">encoding</a> <var>encoding</var> (default <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8" id="ref-for-utf-8①">UTF-8</a>), and
 then runs these steps:</p>
@@ -189,7 +189,9 @@ LF), to <var>output</var>.</p>
    </ol>
    <p class="XXX">Or should this enqueue chunks into a <code class="idl"><a data-link-type="idl" href="https://streams.spec.whatwg.org/#readablestream" id="ref-for-readablestream">ReadableStream</a></code> instead? </p>
    <p class="XXX">This matches the behavior Gecko will have once <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a> is closed, modulo the
-non-standard handling of directories. I haven’t checked Blink/WebKit. </p>
+non-standard handling of directories. Chromium’s behavior also seems to match, except that it
+doesn’t yet perform newline normalizations at the serialization layer, which will be fixed in <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue 1167095</a>. I haven’t
+yet checked WebKit. </p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="escape-a-multipart-form-data-name">escape a <code>multipart/form-data</code> name</dfn> with a string <var>name</var>, an optional <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encoding" id="ref-for-encoding②">encoding</a> <var>encoding</var> (default <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8" id="ref-for-utf-8②">UTF-8</a>) and an optional boolean <dfn class="dfn-paneled" data-dfn-for="escape
 name" data-dfn-type="dfn" data-noexport id="escape-name-isfilename"><var>isFilename</var></dfn> (default false):</p>
    <ol>
@@ -216,7 +218,22 @@ with `<code>%0D</code>` and 0x22 (") with `<code>%22</code>`.</p>
      <p>Return <var>encoded</var>.</p>
    </ol>
    <h2 class="heading settled" data-level="3" id="parsing"><span class="secno">3. </span><span class="content"><code>multipart/form-data</code> parsing</span><a class="self-link" href="#parsing"></a></h2>
-   <p class="XXX">🤷 </p>
+   <div class="XXX">
+    <p>🤷 </p>
+    <p>Gecko and Chromium seem to have wildly different behaviors for <code class="highlight"><a class="idl-code" data-link-type="interface" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body">Body</a><c- p>.</c->prototype<c- p>.</c-><a class="idl-code" data-link-type="method" href="https://fetch.spec.whatwg.org/#dom-body-formdata" id="ref-for-dom-body-formdata">formData</a><c- p>()</c-></code>,
+  and there’s also a Web Extensions API that parses <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data③"><code>multipart/form-data</code></a> and that
+  in both Gecko and Chromium seems to be completely independent from the parser in <code class="idl"><a data-link-type="idl" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body①">Body</a></code> (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>): </p>
+<pre class="lang-js highlight" style="color: #666666">chrome<c- p>.</c->webRequest<c- p>.</c->onBeforeRequest<c- p>.</c->addListener<c- p>(</c->
+  <c- p>(</c->details<c- p>)</c-> <c- p>=></c-> <c- p>{</c->
+    <c- c1>// Returns an object mapping names to an array of values represented by</c->
+    <c- c1>// either the string value or by the file’s filename.</c->
+    console<c- p>.</c->log<c- p>(</c->details<c- p>.</c->requestBody<c- p>.</c->formData<c- p>);</c->
+  <c- p>},</c->
+  <c- p>{</c->urls<c- o>:</c-> <c- p>[</c-><c- u>"&lt;all_urls>"</c-><c- p>]},</c->
+  <c- p>[</c-><c- u>"requestBody"</c-><c- p>]</c->
+<c- p>);</c->
+</pre>
+   </div>
    <h2 class="no-num heading settled" id="ipr"><span class="content">Intellectual property rights</span><a class="self-link" href="#ipr"></a></h2>
    <p>Copyright © WHATWG (Apple, Google, Mozilla, Microsoft). This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">Creative Commons Attribution
 4.0 International License</a>. </p>
@@ -264,6 +281,18 @@ if ("serviceWorker" in navigator) {
    <a href="https://encoding.spec.whatwg.org/#utf-8">https://encoding.spec.whatwg.org/#utf-8</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-utf-8">2. multipart/form-data serializing</a> <a href="#ref-for-utf-8①">(2)</a> <a href="#ref-for-utf-8②">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-body">
+   <a href="https://fetch.spec.whatwg.org/#body">https://fetch.spec.whatwg.org/#body</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-body">3. multipart/form-data parsing</a> <a href="#ref-for-body①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-body-formdata">
+   <a href="https://fetch.spec.whatwg.org/#dom-body-formdata">https://fetch.spec.whatwg.org/#dom-body-formdata</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-body-formdata">3. multipart/form-data parsing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dfn-file">
@@ -381,6 +410,12 @@ if ("serviceWorker" in navigator) {
      <li><span class="dfn-paneled" id="term-for-utf-8">utf-8</span>
     </ul>
    <li>
+    <a data-link-type="biblio">[FETCH]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-body">Body</span>
+     <li><span class="dfn-paneled" id="term-for-dom-body-formdata">formData()</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[FileAPI]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-dfn-file">File</span>
@@ -423,6 +458,8 @@ if ("serviceWorker" in navigator) {
   <dl>
    <dt id="biblio-encoding">[ENCODING]
    <dd>Anne van Kesteren. <a href="https://encoding.spec.whatwg.org/">Encoding Standard</a>. Living Standard. URL: <a href="https://encoding.spec.whatwg.org/">https://encoding.spec.whatwg.org/</a>
+   <dt id="biblio-fetch">[FETCH]
+   <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/">Fetch Standard</a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
    <dt id="biblio-fileapi">[FileAPI]
    <dd>Marijn Kruisselbrink; Arun Ranganathan. <a href="https://w3c.github.io/FileAPI/">File API</a>. URL: <a href="https://w3c.github.io/FileAPI/">https://w3c.github.io/FileAPI/</a>
    <dt id="biblio-infra">[INFRA]
@@ -470,6 +507,7 @@ if ("serviceWorker" in navigator) {
    <b><a href="#multipart-form-data">#multipart-form-data</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-multipart-form-data①">2. multipart/form-data serializing</a> <a href="#ref-for-multipart-form-data②">(2)</a>
+    <li><a href="#ref-for-multipart-form-data③">3. multipart/form-data parsing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="multipart-form-data-boundary-string">

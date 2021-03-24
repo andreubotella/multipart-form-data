@@ -60,91 +60,6 @@ collision is found is well over a yottabyte.
 
 <hr>
 
-The <dfn export><code>multipart/form-data</code> length</dfn> of an [=entry list=] |entries| and a
-boundary string |boundary|, with an optional [=/encoding=] |encoding| (default [=UTF-8=]) is the
-result of running these steps:
-
-1.  Set |encoding| to the result of [=getting an output encoding=] from |encoding|.
-1.  Let |length| be 6 + the length of |boundary|.
-1.  [=list/For each=] |entry| in |entries|:
-    1.  Let |name length| be the [=byte sequence/length=] of the result of <a>escaping a
-        <code>multipart/form-data</code> name</a> given |entry|'s [=entry list/name=] and
-        |encoding|.
-    1.  Let |entry length| be 49 + the length of |boundary| + |name length|.
-    1.  If |entry|'s [=entry list/value=] is a {{File}}:
-        1.  Let |file| be |entry|'s [=entry list/value=].
-        1.  Let |filename length| be the [=byte sequence/length=] of the result of <a>escaping a
-            <code>multipart/form-data</code> name</a> given |file|'s {{File/name}} with |encoding|
-            and <a for="escape name">|isFilename|</a> set to true.
-        1.  Increase |entry length| by 29 + |filename length| + the length of |file|'s
-            {{Blob/type}} + |file|'s {{Blob/size}}.
-
-        Otherwise:
-        1.  Let |value| be |entry|'s [=entry list/value=], with every occurrence of U+000D (CR) not
-            followed by U+000A (LF), and every occurrence of U+000A (LF) not preceded by U+000D
-            (CR), replaced by a string consisting of U+000D (CR) and U+000A (LF).
-        1.  Increase |entry length| by the length of the result of [=/encode|encoding=] |value| with
-            |encoding|.
-1.  Return |length|.
-
-<p class="note">The <a><code>multipart/form-data</code> length</a> is the length of the byte
-sequence that results from running the <a><code>multipart/form-data</code> serializer</a>. This is
-provided as a separate algorithm to make it possible to use ahead of time, without the need to read
-any files from the filesystem before their contents are needed.
-
-<p class="XXX">Do we need to define this in the spec? That seems way too error-prone. Can't we
-simply take the length of the serialization in spec-land, with a note saying that UAs can optimize
-with <code highlight="js"><var>file</var>.<a attribute for="Blob">size</a></code>?
-
-<hr>
-
-The <dfn export><code>multipart/form-data</code> serializer</dfn> takes an [=entry list=] |entries|
-and a boundary string |boundary|, with an optional [=/encoding=] |encoding| (default [=UTF-8=]), and
-then runs these steps:
-
-1.  Set |encoding| to the result of [=getting an output encoding=] from |encoding|.
-1.  Let |output| be the empty byte sequence.
-1.  [=list/For each=] |entry| in |entries|:
-    1.  Let |name| be |entry|'s [=entry list/name=].
-    1.  Append `<code>--</code>`, followed by |boundary|, followed by 0x0D 0x0A (CR LF), to
-        |output|.
-    1.  Append `<code>Content-Disposition: form-data; name="</code>`, followed by the result of
-        <a>escaping a <code>multipart/form-data</code> name</a> given |entry|'s
-        [=entry list/name=] and |encoding|, followed by 0x22 ("), to |output|.
-    1.  If |entry|'s [=entry list/value=] is a string:
-        1.  Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to |output|.
-        1.  Let |value| be |entry|'s [=entry list/value=].
-        1.  Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every
-            occurrence of U+000A (LF) not preceded by U+000D (CR), in |value|, by a string
-            consisting of U+000D (CR) and U+000A (LF).
-        1.  Append the result of [=/encode|encoding=] |value| with |encoding|, converted to a byte
-            sequence, to |output|.
-
-        Otherwise:
-        1.  Let |file| be |entry|'s [=entry list/value=].
-        1.  [=Assert=]: |file| is a {{File}}.
-        1.  Append `<code>; filename="</code>`, followed by the result of <a>escaping a
-            <code>multipart/form-data</code> name</a> given |file|'s {{File/name}} with |encoding|
-            and <a for="escape name">|isFilename|</a> set to true, followed by 0x22 0x0D 0x0A (" CR
-            LF), to |output|.
-        1.  Append `<code>Content-Type: </code>`, followed by the result of [=isomorphic encoding=]
-            |file|'s {{Blob/type}}, to |output|.
-        1.  Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to |output|.
-        1.  Append <span class=XXX>|file|'s underlying byte sequence</span> to |output|.
-    1.  Append 0x0D 0x0A (CR LF) to |output|.
-1.  Append `<code>--</code>`, followed by |boundary|, followed by `<code>--</code>`, followed by
-    0x0D 0x0A (CR LF), to |output|.
-1.  Return |output|.
-
-<p class="XXX">Or should this enqueue chunks into a {{ReadableStream}} instead?
-
-<p class="XXX">This matches the behavior Gecko will have once <a
-href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a> is closed, modulo the
-non-standard handling of directories. Chromium's behavior also seems to match, except that it
-doesn't yet perform newline normalizations at the serialization layer, which will be fixed in <a
-href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue 1167095</a>. I haven't
-yet checked WebKit.
-
 To <dfn>escape a <code>multipart/form-data</code> name</dfn> with a string |name|, an optional
 [=/encoding=] |encoding| (default [=UTF-8=]) and an optional boolean <dfn for="escape
 name">|isFilename|</dfn> (default false):
@@ -162,6 +77,105 @@ name">|isFilename|</dfn> (default false):
     with `<code>%0D</code>` and 0x22 (") with `<code>%22</code>`.
 1.  Return |encoded|.
 
+The <dfn export><code>multipart/form-data</code> chunk serializer</dfn> takes an [=entry list=]
+|entries| and an optional [=/encoding=] |encoding| (default [=UTF-8=]), and returns a tuple of a
+<a for="multipart/form-data" lt="boundary string"><code>multipart/form-data</code> boundary
+string</a> and a list of chunks, each of which can be either a byte sequence or a {{File}}:
+
+1.  Set |encoding| to the result of [=getting an output encoding=] from |encoding|.
+1.  Let |boundary| be the result of [=multipart/form-data/boundary string/generating=] a
+    <a for="multipart/form-data" lt="boundary string"><code>multipart/form-data</code> boundary
+    string</a>.
+1.  Let |output chunks| be an empty list.
+1.  [=list/For each=] |entry| in |entries|:
+    1.  Let |chunk| be a byte sequence containing `<code>--</code>`, followed by |boundary|,
+        followed by 0x0D 0x0A (CR LF).
+    1.  Append `<code>Content-Disposition: form-data; name="</code>`, followed by the result of
+        <a>escaping a <code>multipart/form-data</code> name</a> given |entry|'s [=entry list/name=]
+        and |encoding|, followed by 0x22 ("), to |chunk|.
+    1.  Let |value| be |entry|'s [=entry list/value=].
+    1.  If |value| is a string:
+        1.  Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to |chunk|.
+        1.  Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every
+            occurrence of U+000A (LF) not preceded by U+000D (CR), in |value|, by a string
+            consisting of U+000D (CR) and U+000A (LF).
+        1.  Append the result of [=/encode|encoding=] |value| with |encoding|, converted to a byte
+            sequence, to |chunk|.
+        1.  Append 0x0D 0x0A (CR LF) to |chunk|.
+        1.  Append |chunk| to |output chunks|.
+
+        Otherwise:
+        1.  [=Assert=]: |value| is a {{File}}.
+        1.  Append `<code>; filename="</code>`, followed by the result of <a>escaping a
+            <code>multipart/form-data</code> name</a> given |value|'s {{File/name}} with |encoding|
+            and <a for="escape name">|isFilename|</a> set to true, followed by 0x22 0x0D 0x0A (" CR
+            LF), to |chunk|.
+        1.  Append `<code>Content-Type: </code>`, followed by the result of [=isomorphic encoding=]
+            |value|'s {{Blob/type}}, to |chunk|.
+        1.  Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to |chunk|.
+        1.  Append |chunk|, followed by |value|, followed by the byte sequence 0x0D 0x0A (CR LF), to
+            |output chunks|.
+1.  Append the byte sequence containing `<code>--</code>`, followed by |boundary|, followed by
+    `<code>--</code>`, followed by 0x0D 0x0A (CR LF), to |output chunks|.
+1.  Return the tuple |boundary| / |output chunks|.
+
+<p class="XXX">This matches the behavior Gecko will have once <a
+href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a> is closed, modulo the
+non-standard handling of directories. Chromium's behavior also seems to match, except that it
+doesn't yet perform newline normalizations at the serialization layer, which will be fixed in <a
+href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue 1167095</a>. I haven't
+yet checked WebKit.
+
+<hr>
+
+The <dfn export for="multipart/form-data">length</dfn> of a <a><code>multipart/form-data</code></a>
+payload, given a list of chunks which can be either byte sequences or {{File}}s |chunks|, is the
+result of running the following steps:
+
+1.  Let |length| be 0.
+1.  [=list/For each=] |chunk| in |chunks|:
+    1.  If |chunk| is a byte sequence:
+        1.  Increase |length| by |chunk|'s length.
+
+        Otherwise:
+        1.  [=Assert=]: |chunk| is a {{File}}.
+        1.  Increase |length| by |chunk|'s {{Blob/size}}.
+1.  Return |length|.
+
+To <dfn export>create a <code>multipart/form-data</code> readable stream</dfn> from a list of chunks
+which can be either byte sequences or {{File}}s |chunks|, run the following steps:
+
+1.  Let |file stream| be null.
+1.  Let |stream| be a [=new=] {{ReadableStream}}.
+1.  Let |pull algorithm| be an algorithm that runs the following steps:
+    <dl class="switch">
+      : if |file stream| is null and |chunks| is not empty
+      ::  1.  If |chunks|[0] is a byte sequence, [=ReadableStream/enqueue=] a {{Uint8Array}} object
+              wrapping an {{ArrayBuffer}} containing |chunks|[0] into |stream|.
+          1.  Otherwise:
+              1.  [=Assert=]: |chunks|[0] is a {{File}} object.
+              1.  Set |file stream| to the result of running |chunks|[0]'s {{Blob/stream}} method.
+          1.  [=list/Remove=] the first item from |chunks|.
+      : if |file stream| is null and |chunks| is empty
+      ::  1.  [=ReadableStream/Close=] |stream|.
+      : if |file stream| is not null
+      ::  1.  Let |read request| be a new [=read request=] with the following [=struct/items=]:
+              : [=read request/chunk steps=], given |chunk|
+              ::  1.  If |chunk| is not a {{Uint8Array}} object, [=ReadableStream/error=] |stream|
+                      with a {{TypeError}} and abort these steps.
+                  1.  [=ReadableStream/Enqueue=] |chunk| into |stream|.
+              : [=read request/close steps=]
+              ::  1.  Set |file stream| to null.
+              : [=read request/error steps=], given |e|
+              ::  1.  [=ReadableStream/error=] |stream| with |e|.
+          1.  Let |reader| be the result of [=ReadableStream/getting a reader=] for |file stream|.
+          1.  [=ReadableStreamDefaultReader/Read a chunk=] from |reader| with |read request|.
+
+    </dl>
+1.  Let |cancel algorithm| be an algorithm that runs the following steps, given |reason|:
+    1.  If |file stream| is not null, [=ReadableStream/cancel=] |file stream| with |reason|.
+1.  [=ReadableStream/Set up=] |stream| with |pull algorithm| and |cancel algorithm|.
+1.  Return |stream|.
 
 <code>multipart/form-data</code> parsing {#parsing}
 ===================================================

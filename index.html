@@ -221,6 +221,8 @@ which can be either byte sequences or <code class="idl"><a data-link-type="idl" 
            <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a>: <var>chunks</var>[0] is a <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file⑥">File</a></code> object.</p>
           <li data-md>
            <p>Set <var>file stream</var> to the result of running <var>chunks</var>[0]'s <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dom-blob-stream" id="ref-for-dom-blob-stream">stream</a></code> method.</p>
+          <li data-md>
+           <p>Run <var>pull algorithm</var>.</p>
          </ol>
         <li data-md>
          <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove">Remove</a> the first item from <var>chunks</var>.</p>
@@ -250,12 +252,14 @@ which can be either byte sequences or <code class="idl"><a data-link-type="idl" 
            <ol>
             <li data-md>
              <p>Set <var>file stream</var> to null.</p>
+            <li data-md>
+             <p>Run <var>pull algorithm</var>.</p>
            </ol>
           <dt data-md><a data-link-type="dfn" href="https://streams.spec.whatwg.org/#read-request-error-steps" id="ref-for-read-request-error-steps">error steps</a>, given <var>e</var>
           <dd data-md>
            <ol>
             <li data-md>
-             <p><a data-link-type="dfn" href="https://streams.spec.whatwg.org/#readablestream-error" id="ref-for-readablestream-error①">error</a> <var>stream</var> with <var>e</var>.</p>
+             <p><a data-link-type="dfn" href="https://streams.spec.whatwg.org/#readablestream-error" id="ref-for-readablestream-error①">Error</a> <var>stream</var> with <var>e</var>.</p>
            </ol>
          </dl>
         <li data-md>

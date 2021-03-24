@@ -60,6 +60,8 @@ collision is found is well over a yottabyte.
 
 <hr>
 
+<div algorithm="escape a multipart/form-data name">
+
 To <dfn>escape a <code>multipart/form-data</code> name</dfn> with a string |name|, an optional
 [=/encoding=] |encoding| (default [=UTF-8=]) and an optional boolean <dfn for="escape
 name">|isFilename|</dfn> (default false):
@@ -76,6 +78,10 @@ name">|isFilename|</dfn> (default false):
 1.  Replace every 0x0A (LF) bytes in |encoded| with the byte sequence `<code>%0A</code>`, 0x0D (CR)
     with `<code>%0D</code>` and 0x22 (") with `<code>%22</code>`.
 1.  Return |encoded|.
+
+</div>
+
+<div algorithm="multipart/form-data chunk serializer">
 
 The <dfn export><code>multipart/form-data</code> chunk serializer</dfn> takes an [=entry list=]
 |entries| and an optional [=/encoding=] |encoding| (default [=UTF-8=]), and returns a tuple of a
@@ -108,8 +114,8 @@ string</a> and a list of chunks, each of which can be either a byte sequence or 
         1.  [=Assert=]: |value| is a {{File}}.
         1.  Append `<code>; filename="</code>`, followed by the result of <a>escaping a
             <code>multipart/form-data</code> name</a> given |value|'s {{File/name}} with |encoding|
-            and <a for="escape name">|isFilename|</a> set to true, followed by 0x22 0x0D 0x0A (" CR
-            LF), to |chunk|.
+            and <a for="escape name"><var ignore>isFilename</var></a> set to true, followed by
+            0x22 0x0D 0x0A (" CR LF), to |chunk|.
         1.  Append `<code>Content-Type: </code>`, followed by the result of [=isomorphic encoding=]
             |value|'s {{Blob/type}}, to |chunk|.
         1.  Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to |chunk|.
@@ -119,6 +125,8 @@ string</a> and a list of chunks, each of which can be either a byte sequence or 
     `<code>--</code>`, followed by 0x0D 0x0A (CR LF), to |output chunks|.
 1.  Return the tuple |boundary| / |output chunks|.
 
+</div>
+
 <p class="XXX">This matches the behavior Gecko will have once <a
 href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a> is closed, modulo the
 non-standard handling of directories. Chromium's behavior also seems to match, except that it
@@ -127,6 +135,8 @@ href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue 11670
 yet checked WebKit.
 
 <hr>
+
+<div algorithm="length of a multipart/form-data payload">
 
 The <dfn export for="multipart/form-data">length</dfn> of a <a><code>multipart/form-data</code></a>
 payload, given a list of chunks which can be either byte sequences or {{File}}s |chunks|, is the
@@ -141,6 +151,10 @@ result of running the following steps:
         1.  [=Assert=]: |chunk| is a {{File}}.
         1.  Increase |length| by |chunk|'s {{Blob/size}}.
 1.  Return |length|.
+
+</div>
+
+<div algorithm="create a multipart/form-data readable stream">
 
 To <dfn export>create a <code>multipart/form-data</code> readable stream</dfn> from a list of chunks
 which can be either byte sequences or {{File}}s |chunks|, run the following steps:
@@ -180,6 +194,8 @@ which can be either byte sequences or {{File}}s |chunks|, run the following step
     for="ReadableStream/set up"><var ignore>pullAlgorithm</var></a> set to |pull algorithm| and <a
     for="ReadableStream/set up"><var ignore>cancelAlgorithm</a> set to |cancel algorithm|.
 1.  Return |stream|.
+
+</div>
 
 <code>multipart/form-data</code> parsing {#parsing}
 ===================================================

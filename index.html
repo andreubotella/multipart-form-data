@@ -75,7 +75,7 @@ list" data-dfn-type="dfn" data-export id="entry-list-value">value</dfn> (either 
 list</a>, which, unlike the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-urlencoded" id="ref-for-concept-urlencoded"><code>application/x-www-form-urlencoded</code></a> format, can transmit
 file contents.</p>
    <h2 class="heading settled" data-level="2" id="serializing"><span class="secno">2. </span><span class="content"><code>multipart/form-data</code> serializing</span><a class="self-link" href="#serializing"></a></h2>
-   <p>A <dfn class="dfn-paneled" data-dfn-for="multipart/form-data" data-dfn-type="dfn" data-export data-lt="boundary string" id="multipart-form-data-boundary-string"><code>multipart/form-data</code> boundary string</dfn> is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence">byte sequence</a> such that:</p>
+   <p>A <dfn class="dfn-paneled" data-dfn-for="multipart/form-data" data-dfn-type="dfn" data-export data-lt="boundary" id="multipart-form-data-boundary"><code>multipart/form-data</code> boundary</dfn> is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence">byte sequence</a> such that:</p>
    <ul>
     <li data-md>
      <p>its length is greater or equal to 27 and lesser or equal to 70, and</p>
@@ -83,18 +83,15 @@ file contents.</p>
      <p>it is composed by bytes in the ranges 0x30 to 0x39, 0x41 to 0x5A, or 0x61 to 0x7A, inclusive
 (<a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ascii-alphanumeric" id="ref-for-ascii-alphanumeric">ASCII alphanumeric</a>), or which are 0x27 ('), 0x2D (-) or 0x5F (_).</p>
    </ul>
-   <p class="note" role="note">The <a data-link-type="dfn" href="#multipart-form-data-boundary-string" id="ref-for-multipart-form-data-boundary-string"><code>multipart/form-data</code> boundary string</a> being a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence①">byte sequence</a> rather than a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string">string</a> is an unfortunate historical accident. </p>
-   <p>To <dfn class="dfn-paneled" data-dfn-for="multipart/form-data/boundary string" data-dfn-type="dfn" data-export id="multipart-form-data-boundary-string-generate">generate</dfn> a <a data-link-type="dfn" href="#multipart-form-data-boundary-string" id="ref-for-multipart-form-data-boundary-string①"><code>multipart/form-data</code> boundary string</a>,
-return an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined">implementation-defined</a> byte sequence which fullfills the conditions for boundary
-strings, such that part of it is randomly generated, with a minimum entropy of 95 bits.</p>
-   <p class="note" role="note">Previous definitions of <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data①"><code>multipart/form-data</code></a> <span class="allow-2119">required</span> that the <a data-link-type="dfn" href="#multipart-form-data-boundary-string" id="ref-for-multipart-form-data-boundary-string②">boundary string</a> associated with
-a <code>multipart/form-data</code> payload not be present anywhere in the payload other than as a
-delimiter, although they allow for generating the <a data-link-type="dfn" href="#multipart-form-data-boundary-string" id="ref-for-multipart-form-data-boundary-string③">boundary string</a> probabilistically. Since this generation algorithm isseparate from a payload, however, it has to
+   <p>To <dfn class="dfn-paneled" data-dfn-for="multipart/form-data/boundary" data-dfn-type="dfn" data-export id="multipart-form-data-boundary-generate">generate</dfn> a <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary"><code>multipart/form-data</code> boundary</a>, return an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined">implementation-defined</a> byte sequence which fullfills the conditions for boundaries, such that
+part of it is randomly generated, with a minimum entropy of 95 bits.</p>
+   <p class="note" role="note">Previous definitions of <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data①"><code>multipart/form-data</code></a> <span class="allow-2119">required</span> that the <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary①">boundary</a> associated with a <code>multipart/form-data</code> payload not be present anywhere in the payload other than as a
+delimiter, although they allow for generating the <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary②">boundary</a> probabilistically. Since this generation algorithm isseparate from a payload, however, it has to
 specify a minimum entropy instead. <a data-link-type="biblio" href="#biblio-rfc7578">[RFC7578]</a> <a data-link-type="biblio" href="#biblio-rfc2046">[RFC2046]</a> </p>
-   <p class="note" role="note">If a user agent generates <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data②"><code>multipart/form-data</code></a> boundary strings
-with a length of 27 and an entropy of 95 bits, given a payload made specifically to generate
-collisions with that user agent’s boundary strings, the expected length of the payload before a
-collision is found is well over a yottabyte. </p>
+   <p class="note" role="note">If a user agent generates <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data②"><code>multipart/form-data</code></a> boundaries with a
+length of 27 and an entropy of 95 bits, given a payload made specifically to generate collisions
+with that user agent’s boundaries, the expected length of the payload before a collision is found is
+well over a yottabyte. </p>
    <hr>
    <div class="algorithm" data-algorithm="escape a multipart/form-data name">
     <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="escape-a-multipart-form-data-name">escape a <code>multipart/form-data</code> name</dfn> with a string <var>name</var>, an optional <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encoding" id="ref-for-encoding">encoding</a> <var>encoding</var> (default <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8" id="ref-for-utf-8">UTF-8</a>) and an optional boolean <dfn class="dfn-paneled" data-dfn-for="escape
@@ -124,14 +121,13 @@ with `<code>%0D</code>` and 0x22 (") with `<code>%22</code>`.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="multipart/form-data chunk serializer">
-    <p>The <dfn data-dfn-type="dfn" data-export id="multipart-form-data-chunk-serializer"><code>multipart/form-data</code> chunk serializer<a class="self-link" href="#multipart-form-data-chunk-serializer"></a></dfn> takes an <a data-link-type="dfn" href="#entry-list" id="ref-for-entry-list①">entry list</a> <var>entries</var> and an optional <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encoding" id="ref-for-encoding①">encoding</a> <var>encoding</var> (default <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8" id="ref-for-utf-8①">UTF-8</a>), and returns a tuple of a <a data-link-type="dfn" href="#multipart-form-data-boundary-string" id="ref-for-multipart-form-data-boundary-string④"><code>multipart/form-data</code> boundary
-string</a> and a list of chunks, each of which can be either a byte sequence or a <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file①">File</a></code>:</p>
+    <p>The <dfn data-dfn-type="dfn" data-export id="multipart-form-data-chunk-serializer"><code>multipart/form-data</code> chunk serializer<a class="self-link" href="#multipart-form-data-chunk-serializer"></a></dfn> takes an <a data-link-type="dfn" href="#entry-list" id="ref-for-entry-list①">entry list</a> <var>entries</var> and an optional <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encoding" id="ref-for-encoding①">encoding</a> <var>encoding</var> (default <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8" id="ref-for-utf-8①">UTF-8</a>), and returns a tuple of a <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary③"><code>multipart/form-data</code> boundary</a> and a list
+of chunks, each of which can be either a byte sequence or a <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file①">File</a></code>:</p>
     <ol>
      <li data-md>
       <p>Set <var>encoding</var> to the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#get-an-output-encoding" id="ref-for-get-an-output-encoding">getting an output encoding</a> from <var>encoding</var>.</p>
      <li data-md>
-      <p>Let <var>boundary</var> be the result of <a data-link-type="dfn" href="#multipart-form-data-boundary-string-generate" id="ref-for-multipart-form-data-boundary-string-generate">generating</a> a <a data-link-type="dfn" href="#multipart-form-data-boundary-string" id="ref-for-multipart-form-data-boundary-string⑤"><code>multipart/form-data</code> boundary
-string</a>.</p>
+      <p>Let <var>boundary</var> be the result of <a data-link-type="dfn" href="#multipart-form-data-boundary-generate" id="ref-for-multipart-form-data-boundary-generate">generating</a> a <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary④"><code>multipart/form-data</code> boundary</a>.</p>
      <li data-md>
       <p>Let <var>output chunks</var> be an empty list.</p>
      <li data-md>
@@ -328,12 +324,12 @@ if ("serviceWorker" in navigator) {
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
-   <li><a href="#multipart-form-data-boundary-string">boundary string</a><span>, in §2</span>
+   <li><a href="#multipart-form-data-boundary">boundary</a><span>, in §2</span>
    <li><a href="#create-a-multipart-form-data-readable-stream">create a multipart/form-data readable stream</a><span>, in §2</span>
    <li><a href="#entry-list-entry">entry</a><span>, in §1</span>
    <li><a href="#entry-list">entry list</a><span>, in §1</span>
    <li><a href="#escape-a-multipart-form-data-name">escape a multipart/form-data name</a><span>, in §2</span>
-   <li><a href="#multipart-form-data-boundary-string-generate">generate</a><span>, in §2</span>
+   <li><a href="#multipart-form-data-boundary-generate">generate</a><span>, in §2</span>
    <li><a href="#escape-name-isfilename">isFilename</a><span>, in §2</span>
    <li><a href="#multipart-form-data-length">length</a><span>, in §2</span>
    <li><a href="#multipart-form-data">multipart/form-data</a><span>, in §1</span>
@@ -423,7 +419,7 @@ if ("serviceWorker" in navigator) {
   <aside class="dfn-panel" data-for="term-for-byte-sequence">
    <a href="https://infra.spec.whatwg.org/#byte-sequence">https://infra.spec.whatwg.org/#byte-sequence</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-byte-sequence">2. multipart/form-data serializing</a> <a href="#ref-for-byte-sequence①">(2)</a>
+    <li><a href="#ref-for-byte-sequence">2. multipart/form-data serializing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-javascript-string-convert">
@@ -467,12 +463,6 @@ if ("serviceWorker" in navigator) {
    <ul>
     <li><a href="#ref-for-scalar-value-string">1. Introduction</a> <a href="#ref-for-scalar-value-string①">(2)</a>
     <li><a href="#ref-for-scalar-value-string②">2. multipart/form-data serializing</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-string">
-   <a href="https://infra.spec.whatwg.org/#string">https://infra.spec.whatwg.org/#string</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-string">2. multipart/form-data serializing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-readablestream">
@@ -633,7 +623,6 @@ if ("serviceWorker" in navigator) {
      <li><span class="dfn-paneled" id="term-for-struct-item">item</span>
      <li><span class="dfn-paneled" id="term-for-list-remove">remove</span>
      <li><span class="dfn-paneled" id="term-for-scalar-value-string">scalar value string</span>
-     <li><span class="dfn-paneled" id="term-for-string">string</span>
     </ul>
    <li>
     <a data-link-type="biblio">[STREAMS]</a> defines the following terms:
@@ -731,16 +720,16 @@ if ("serviceWorker" in navigator) {
     <li><a href="#ref-for-multipart-form-data④">3. multipart/form-data parsing</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="multipart-form-data-boundary-string">
-   <b><a href="#multipart-form-data-boundary-string">#multipart-form-data-boundary-string</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="multipart-form-data-boundary">
+   <b><a href="#multipart-form-data-boundary">#multipart-form-data-boundary</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-multipart-form-data-boundary-string">2. multipart/form-data serializing</a> <a href="#ref-for-multipart-form-data-boundary-string①">(2)</a> <a href="#ref-for-multipart-form-data-boundary-string②">(3)</a> <a href="#ref-for-multipart-form-data-boundary-string③">(4)</a> <a href="#ref-for-multipart-form-data-boundary-string④">(5)</a> <a href="#ref-for-multipart-form-data-boundary-string⑤">(6)</a>
+    <li><a href="#ref-for-multipart-form-data-boundary">2. multipart/form-data serializing</a> <a href="#ref-for-multipart-form-data-boundary①">(2)</a> <a href="#ref-for-multipart-form-data-boundary②">(3)</a> <a href="#ref-for-multipart-form-data-boundary③">(4)</a> <a href="#ref-for-multipart-form-data-boundary④">(5)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="multipart-form-data-boundary-string-generate">
-   <b><a href="#multipart-form-data-boundary-string-generate">#multipart-form-data-boundary-string-generate</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="multipart-form-data-boundary-generate">
+   <b><a href="#multipart-form-data-boundary-generate">#multipart-form-data-boundary-generate</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-multipart-form-data-boundary-string-generate">2. multipart/form-data serializing</a>
+    <li><a href="#ref-for-multipart-form-data-boundary-generate">2. multipart/form-data serializing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="escape-a-multipart-form-data-name">

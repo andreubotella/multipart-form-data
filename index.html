@@ -183,9 +183,9 @@ sequence, to <var>chunk</var>.</p>
       <p>Return the tuple <var>boundary</var> / <var>output chunks</var>.</p>
     </ol>
    </div>
-   <p class="XXX">This matches the behavior Gecko will have once <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a> is closed, modulo the
-non-standard handling of directories. Chromium’s behavior also seems to match, except that it
-doesn’t yet perform newline normalizations at the serialization layer, which will be fixed in <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue 1167095</a>. I haven’t
+   <p class="XXX">This matches the behavior Gecko will have once <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a> is closed. Chromium’s
+behavior also seems to match, except that it doesn’t yet perform newline normalizations at the
+serialization layer, which will be fixed in <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue 1167095</a>. I haven’t
 yet checked WebKit. </p>
    <hr>
    <div class="algorithm" data-algorithm="length of a multipart/form-data payload">

@@ -174,7 +174,9 @@ which can be either byte sequences or {{File}}s |chunks|, run the following step
     </dl>
 1.  Let |cancel algorithm| be an algorithm that runs the following steps, given |reason|:
     1.  If |file stream| is not null, [=ReadableStream/cancel=] |file stream| with |reason|.
-1.  [=ReadableStream/Set up=] |stream| with |pull algorithm| and |cancel algorithm|.
+1.  [=ReadableStream/Set up=] |stream| with <a
+    for="ReadableStream/set up"><var ignore>pullAlgorithm</var></a> set to |pull algorithm| and <a
+    for="ReadableStream/set up"><var ignore>cancelAlgorithm</a> set to |cancel algorithm|.
 1.  Return |stream|.
 
 <code>multipart/form-data</code> parsing {#parsing}

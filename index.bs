@@ -155,6 +155,7 @@ which can be either byte sequences or {{File}}s |chunks|, run the following step
           1.  Otherwise:
               1.  [=Assert=]: |chunks|[0] is a {{File}} object.
               1.  Set |file stream| to the result of running |chunks|[0]'s {{Blob/stream}} method.
+              1.  Run |pull algorithm|.
           1.  [=list/Remove=] the first item from |chunks|.
       : if |file stream| is null and |chunks| is empty
       ::  1.  [=ReadableStream/Close=] |stream|.
@@ -166,8 +167,9 @@ which can be either byte sequences or {{File}}s |chunks|, run the following step
                   1.  [=ReadableStream/Enqueue=] |chunk| into |stream|.
               : [=read request/close steps=]
               ::  1.  Set |file stream| to null.
+                  1.  Run |pull algorithm|.
               : [=read request/error steps=], given |e|
-              ::  1.  [=ReadableStream/error=] |stream| with |e|.
+              ::  1.  [=ReadableStream/Error=] |stream| with |e|.
           1.  Let |reader| be the result of [=ReadableStream/getting a reader=] for |file stream|.
           1.  [=ReadableStreamDefaultReader/Read a chunk=] from |reader| with |read request|.
 

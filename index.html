@@ -189,7 +189,7 @@ doesn’t yet perform newline normalizations at the serialization layer, which w
 yet checked WebKit. </p>
    <hr>
    <div class="algorithm" data-algorithm="length of a multipart/form-data payload">
-    <p>The <dfn data-dfn-for="multipart/form-data" data-dfn-type="dfn" data-export id="multipart-form-data-length">length<a class="self-link" href="#multipart-form-data-length"></a></dfn> of a <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data③"><code>multipart/form-data</code></a> payload, given a list of chunks which can be either byte sequences or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file③">File</a></code>s <var>chunks</var>, is the
+    <p>The <dfn data-dfn-for="multipart/form-data" data-dfn-type="dfn" data-export id="multipart-form-data-length">length<a class="self-link" href="#multipart-form-data-length"></a></dfn> of a <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data③"><code>multipart/form-data</code></a> payload, given a list of chunks <var>chunks</var> which can be either byte sequences or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file③">File</a></code>s, is the
 result of running the following steps:</p>
     <ol>
      <li data-md>
@@ -216,8 +216,7 @@ result of running the following steps:</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="create a multipart/form-data readable stream">
-    <p>To <dfn data-dfn-type="dfn" data-export id="create-a-multipart-form-data-readable-stream">create a <code>multipart/form-data</code> readable stream<a class="self-link" href="#create-a-multipart-form-data-readable-stream"></a></dfn> from a list of chunks
-which can be either byte sequences or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file⑤">File</a></code>s <var>chunks</var>, run the following steps:</p>
+    <p>To <dfn data-dfn-type="dfn" data-export id="create-a-multipart-form-data-readable-stream">create a <code>multipart/form-data</code> readable stream<a class="self-link" href="#create-a-multipart-form-data-readable-stream"></a></dfn> from a list of chunks <var>chunks</var> which can be either byte sequences or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file⑤">File</a></code>s, run the following steps:</p>
     <ol>
      <li data-md>
       <p>Let <var>file stream</var> be null.</p>

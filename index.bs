@@ -30,33 +30,29 @@ file contents.
 <code>multipart/form-data</code> serializing {#serializing}
 ===========================================================
 
-A <dfn export for="multipart/form-data" lt="boundary string"><code>multipart/form-data</code>
-boundary string</dfn> is a [=byte sequence=] such that:
+A <dfn export for="multipart/form-data" lt="boundary"><code>multipart/form-data</code>
+boundary</dfn> is a [=byte sequence=] such that:
 
 *   its length is greater or equal to 27 and lesser or equal to 70, and
 *   it is composed by bytes in the ranges 0x30 to 0x39, 0x41 to 0x5A, or 0x61 to 0x7A, inclusive
     ([=ASCII alphanumeric=]), or which are 0x27 ('), 0x2D (-) or 0x5F (_).
 
-<p class="note">The <a for="multipart/form-data" lt="boundary
-string"><code>multipart/form-data</code> boundary string</a> being a [=byte sequence=] rather than a
-[=string=] is an unfortunate historical accident.
-
-To <dfn export for="multipart/form-data/boundary string">generate</dfn> a <a
-for="multipart/form-data" lt="boundary string"><code>multipart/form-data</code> boundary string</a>,
-return an [=implementation-defined=] byte sequence which fullfills the conditions for boundary
-strings, such that part of it is randomly generated, with a minimum entropy of 95 bits.
+To <dfn export for="multipart/form-data/boundary">generate</dfn> a <a
+for="multipart/form-data" lt="boundary"><code>multipart/form-data</code> boundary</a>, return an
+[=implementation-defined=] byte sequence which fullfills the conditions for boundaries, such that
+part of it is randomly generated, with a minimum entropy of 95 bits.
 
 <p class="note">Previous definitions of <a><code>multipart/form-data</code></a> <span
-class="allow-2119">required</span> that the [=multipart/form-data/boundary string=] associated with
-a <code>multipart/form-data</code> payload not be present anywhere in the payload other than as a
-delimiter, although they allow for generating the [=multipart/form-data/boundary string=]
+class="allow-2119">required</span> that the [=multipart/form-data/boundary=] associated with a
+<code>multipart/form-data</code> payload not be present anywhere in the payload other than as a
+delimiter, although they allow for generating the [=multipart/form-data/boundary=]
 probabilistically. Since this generation algorithm isseparate from a payload, however, it has to
 specify a minimum entropy instead. [[RFC7578]] [[RFC2046]]
 
-<p class="note">If a user agent generates <a><code>multipart/form-data</code></a> boundary strings
-with a length of 27 and an entropy of 95 bits, given a payload made specifically to generate
-collisions with that user agent's boundary strings, the expected length of the payload before a
-collision is found is well over a yottabyte.
+<p class="note">If a user agent generates <a><code>multipart/form-data</code></a> boundaries with a
+length of 27 and an entropy of 95 bits, given a payload made specifically to generate collisions
+with that user agent's boundaries, the expected length of the payload before a collision is found is
+well over a yottabyte.
 
 <hr>
 
@@ -85,13 +81,12 @@ name">|isFilename|</dfn> (default false):
 
 The <dfn export><code>multipart/form-data</code> chunk serializer</dfn> takes an [=entry list=]
 |entries| and an optional [=/encoding=] |encoding| (default [=UTF-8=]), and returns a tuple of a
-<a for="multipart/form-data" lt="boundary string"><code>multipart/form-data</code> boundary
-string</a> and a list of chunks, each of which can be either a byte sequence or a {{File}}:
+<a for="multipart/form-data" lt="boundary"><code>multipart/form-data</code> boundary</a> and a list
+of chunks, each of which can be either a byte sequence or a {{File}}:
 
 1.  Set |encoding| to the result of [=getting an output encoding=] from |encoding|.
-1.  Let |boundary| be the result of [=multipart/form-data/boundary string/generating=] a
-    <a for="multipart/form-data" lt="boundary string"><code>multipart/form-data</code> boundary
-    string</a>.
+1.  Let |boundary| be the result of [=multipart/form-data/boundary/generating=] a
+    <a for="multipart/form-data" lt="boundary"><code>multipart/form-data</code> boundary</a>.
 1.  Let |output chunks| be an empty list.
 1.  [=list/For each=] |entry| in |entries|:
     1.  Let |chunk| be a byte sequence containing `<code>--</code>`, followed by |boundary|,

@@ -271,7 +271,7 @@ which can be either byte sequences or <code class="idl"><a data-link-type="idl" 
        <p>If <var>file stream</var> is not null, <a data-link-type="dfn" href="https://streams.spec.whatwg.org/#readablestream-cancel" id="ref-for-readablestream-cancel">cancel</a> <var>file stream</var> with <var>reason</var>.</p>
      </ol>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://streams.spec.whatwg.org/#readablestream-set-up" id="ref-for-readablestream-set-up">Set up</a> <var>stream</var> with <var>pull algorithm</var> and <var>cancel algorithm</var>.</p>
+     <p><a data-link-type="dfn" href="https://streams.spec.whatwg.org/#readablestream-set-up" id="ref-for-readablestream-set-up">Set up</a> <var>stream</var> with <a data-link-type="dfn" href="https://streams.spec.whatwg.org/#readablestream-set-up-pullalgorithm" id="ref-for-readablestream-set-up-pullalgorithm"><var>pullAlgorithm</var></a> set to <var>pull algorithm</var> and <a data-link-type="dfn" href="https://streams.spec.whatwg.org/#readablestream-set-up-cancelalgorithm" id="ref-for-readablestream-set-up-cancelalgorithm"><var>cancelAlgorithm</var></a> set to <var>cancel algorithm</var>.</p>
     <li data-md>
      <p>Return <var>stream</var>.</p>
    </ol>
@@ -465,6 +465,12 @@ if ("serviceWorker" in navigator) {
     <li><a href="#ref-for-readablestream-cancel">2. multipart/form-data serializing</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-readablestream-set-up-cancelalgorithm">
+   <a href="https://streams.spec.whatwg.org/#readablestream-set-up-cancelalgorithm">https://streams.spec.whatwg.org/#readablestream-set-up-cancelalgorithm</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-readablestream-set-up-cancelalgorithm">2. multipart/form-data serializing</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-read-request-chunk-steps">
    <a href="https://streams.spec.whatwg.org/#read-request-chunk-steps">https://streams.spec.whatwg.org/#read-request-chunk-steps</a><b>Referenced in:</b>
    <ul>
@@ -505,6 +511,12 @@ if ("serviceWorker" in navigator) {
    <a href="https://streams.spec.whatwg.org/#readablestream-get-a-reader">https://streams.spec.whatwg.org/#readablestream-get-a-reader</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-readablestream-get-a-reader">2. multipart/form-data serializing</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-readablestream-set-up-pullalgorithm">
+   <a href="https://streams.spec.whatwg.org/#readablestream-set-up-pullalgorithm">https://streams.spec.whatwg.org/#readablestream-set-up-pullalgorithm</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-readablestream-set-up-pullalgorithm">2. multipart/form-data serializing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-readablestreamdefaultreader-read-a-chunk">
@@ -606,6 +618,7 @@ if ("serviceWorker" in navigator) {
     <ul>
      <li><span class="dfn-paneled" id="term-for-readablestream">ReadableStream</span>
      <li><span class="dfn-paneled" id="term-for-readablestream-cancel">cancel</span>
+     <li><span class="dfn-paneled" id="term-for-readablestream-set-up-cancelalgorithm">cancelalgorithm</span>
      <li><span class="dfn-paneled" id="term-for-read-request-chunk-steps">chunk steps</span>
      <li><span class="dfn-paneled" id="term-for-readablestream-close">close</span>
      <li><span class="dfn-paneled" id="term-for-read-request-close-steps">close steps</span>
@@ -613,6 +626,7 @@ if ("serviceWorker" in navigator) {
      <li><span class="dfn-paneled" id="term-for-readablestream-error">error</span>
      <li><span class="dfn-paneled" id="term-for-read-request-error-steps">error steps</span>
      <li><span class="dfn-paneled" id="term-for-readablestream-get-a-reader">getting a reader</span>
+     <li><span class="dfn-paneled" id="term-for-readablestream-set-up-pullalgorithm">pullalgorithm</span>
      <li><span class="dfn-paneled" id="term-for-readablestreamdefaultreader-read-a-chunk">read a chunk</span>
      <li><span class="dfn-paneled" id="term-for-read-request">read request</span>
      <li><span class="dfn-paneled" id="term-for-readablestream-set-up">set up</span>

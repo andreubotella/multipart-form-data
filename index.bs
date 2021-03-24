@@ -139,7 +139,7 @@ yet checked WebKit.
 <div algorithm="length of a multipart/form-data payload">
 
 The <dfn export for="multipart/form-data">length</dfn> of a <a><code>multipart/form-data</code></a>
-payload, given a list of chunks which can be either byte sequences or {{File}}s |chunks|, is the
+payload, given a list of chunks |chunks| which can be either byte sequences or {{File}}s, is the
 result of running the following steps:
 
 1.  Let |length| be 0.
@@ -157,7 +157,7 @@ result of running the following steps:
 <div algorithm="create a multipart/form-data readable stream">
 
 To <dfn export>create a <code>multipart/form-data</code> readable stream</dfn> from a list of chunks
-which can be either byte sequences or {{File}}s |chunks|, run the following steps:
+|chunks| which can be either byte sequences or {{File}}s, run the following steps:
 
 1.  Let |file stream| be null.
 1.  Let |stream| be a [=new=] {{ReadableStream}}.

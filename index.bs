@@ -66,6 +66,7 @@ name">|isFilename|</dfn> (default false):
     1.  Set |name| to the result of [=string/converting=] |name| into a [=scalar value string=].
 
     Otherwise:
+    1.  [=Assert=]: |name| is a [=scalar value string=].
     1.  Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every occurrence of
         U+000A (LF) not preceded by U+000D (CR), in |name|, by a string consisting of U+000D (CR)
         and U+000A (LF).

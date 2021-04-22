@@ -125,12 +125,22 @@ of chunks, each of which can be either a byte sequence or a {{File}}:
 
 </div>
 
-<p class="XXX">This matches the behavior Gecko will have once <a
-href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a> is closed. Chromium's
-behavior also seems to match, except that it doesn't yet perform newline normalizations at the
-serialization layer, which will be fixed in <a
-href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue 1167095</a>. I haven't
-yet checked WebKit.
+<div class="XXX">
+<p>This algorithm matches the behavior of all major browsers, except for the following bugs:
+
+-   Gecko's <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a>, meaning
+    that field names and filenames are escaped differently: line breaks (whether CR, LF, or CR LF)
+    are escaped into a 0x20 whitespace byte, and double quotes are escaped by prepending a
+    backslash. This was made illegal in <a href="https://github.com/whatwg/html/pull/6282">HTML PR
+    #6282</a>. This bug is in the process of being fixed.
+-   Chromium's <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue
+    1167095</a>, meaning that field names and string values aren't newline-normalized during the
+    <a><code>multipart/form-data</code></a> serialization – although that is only observable for
+    entries not originating from form elements, since those are previously normalized in the
+    [=construct the entry list=] algorithm. This change of behavior is being spec'd in <a
+    href="https://github.com/whatwg/html/pull/6287">HTML PR #6287</a>.
+
+</div>
 
 <hr>
 

@@ -70,8 +70,7 @@ name">|isFilename|</dfn> (default false):
     1.  Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every occurrence of
         U+000A (LF) not preceded by U+000D (CR), in |name|, by a string consisting of U+000D (CR)
         and U+000A (LF).
-1.  Let |encoded| be the result of [=/encode|encoding=] |name| with |encoding|, converted to a byte
-    sequence.
+1.  Let |encoded| be the result of [=/encode|encoding=] |name| with |encoding|.
 1.  Replace every 0x0A (LF) bytes in |encoded| with the byte sequence `<code>%0A</code>`, 0x0D (CR)
     with `<code>%0D</code>` and 0x22 (") with `<code>%22</code>`.
 1.  Return |encoded|.
@@ -101,8 +100,7 @@ of chunks, each of which can be either a byte sequence or a {{File}}:
         1.  Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every
             occurrence of U+000A (LF) not preceded by U+000D (CR), in |value|, by a string
             consisting of U+000D (CR) and U+000A (LF).
-        1.  Append the result of [=/encode|encoding=] |value| with |encoding|, converted to a byte
-            sequence, to |chunk|.
+        1.  Append the result of [=/encode|encoding=] |value| with |encoding| to |chunk|.
         1.  Append 0x0D 0x0A (CR LF) to |chunk|.
         1.  Append |chunk| to |output chunks|.
 

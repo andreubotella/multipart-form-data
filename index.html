@@ -113,8 +113,7 @@ U+000A (LF) not preceded by U+000D (CR), in <var>name</var>, by a string consist
 and U+000A (LF).</p>
       </ol>
      <li data-md>
-      <p>Let <var>encoded</var> be the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encode" id="ref-for-encode">encoding</a> <var>name</var> with <var>encoding</var>, converted to a byte
-sequence.</p>
+      <p>Let <var>encoded</var> be the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encode" id="ref-for-encode">encoding</a> <var>name</var> with <var>encoding</var>.</p>
      <li data-md>
       <p>Replace every 0x0A (LF) bytes in <var>encoded</var> with the byte sequence `<code>%0A</code>`, 0x0D (CR)
 with `<code>%0D</code>` and 0x22 (") with `<code>%22</code>`.</p>
@@ -152,8 +151,7 @@ followed by 0x0D 0x0A (CR LF).</p>
 occurrence of U+000A (LF) not preceded by U+000D (CR), in <var>value</var>, by a string
 consisting of U+000D (CR) and U+000A (LF).</p>
          <li data-md>
-          <p>Append the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encode" id="ref-for-encode①">encoding</a> <var>value</var> with <var>encoding</var>, converted to a byte
-sequence, to <var>chunk</var>.</p>
+          <p>Append the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#encode" id="ref-for-encode①">encoding</a> <var>value</var> with <var>encoding</var> to <var>chunk</var>.</p>
          <li data-md>
           <p>Append 0x0D 0x0A (CR LF) to <var>chunk</var>.</p>
          <li data-md>

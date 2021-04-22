@@ -28,7 +28,7 @@
     <a class="logo" href="https://whatwg.org/"> <img alt="WHATWG" crossorigin height="100" src="https://resources.whatwg.org/logo.svg"> </a> 
    <hgroup>
     <h1 class="p-name no-ref" id="title"><code>multipart/form-data</code></h1>
-    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-04-21">21 April 2021</time></span></h2>
+    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-04-22">22 April 2021</time></span></h2>
    </hgroup>
    <div data-fill-with="spec-metadata">
     <dl>
@@ -167,7 +167,10 @@ sequence, to <var>chunk</var>.</p>
           <p>Append `<code>; filename="</code>`, followed by the result of <a data-link-type="dfn" href="#escape-a-multipart-form-data-name" id="ref-for-escape-a-multipart-form-data-name①">escaping a <code>multipart/form-data</code> name</a> given <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-name" id="ref-for-dfn-name">name</a></code> with <var>encoding</var> and <a data-link-type="dfn" href="#escape-name-isfilename" id="ref-for-escape-name-isfilename"><var>isFilename</var></a> set to true, followed by
 0x22 0x0D 0x0A (" CR LF), to <var>chunk</var>.</p>
          <li data-md>
-          <p>Append `<code>Content-Type: </code>`, followed by the result of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#isomorphic-encode" id="ref-for-isomorphic-encode">isomorphic encoding</a> <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-type" id="ref-for-dfn-type">type</a></code>, to <var>chunk</var>.</p>
+          <p>Let <var>type</var> be <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-type" id="ref-for-dfn-type">type</a></code>, if it is not the empty string, or
+"<code>application/octet-stream</code>" otherwise.</p>
+         <li data-md>
+          <p>Append `<code>Content-Type: </code>`, followed by the result of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#isomorphic-encode" id="ref-for-isomorphic-encode">isomorphic encoding</a> <var>type</var>, to <var>chunk</var>.</p>
          <li data-md>
           <p>Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to <var>chunk</var>.</p>
          <li data-md>

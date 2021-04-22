@@ -184,13 +184,24 @@ sequence, to <var>chunk</var>.</p>
       <p>Return the tuple <var>boundary</var> / <var>output chunks</var>.</p>
     </ol>
    </div>
-   <p class="XXX">This matches the behavior Gecko will have once <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a> is closed. Chromium’s
-behavior also seems to match, except that it doesn’t yet perform newline normalizations at the
-serialization layer, which will be fixed in <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue 1167095</a>. I haven’t
-yet checked WebKit. </p>
+   <div class="XXX">
+    <p>This algorithm matches the behavior of all major browsers, except for the following bugs: </p>
+    <ul>
+     <li data-md>
+      <p>Gecko’s <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a>, meaning
+that field names and filenames are escaped differently: line breaks (whether CR, LF, or CR LF)
+are escaped into a 0x20 whitespace byte, and double quotes are escaped by prepending a
+backslash. This was made illegal in <a href="https://github.com/whatwg/html/pull/6282">HTML PR
+#6282</a>. This bug is in the process of being fixed.</p>
+     <li data-md>
+      <p>Chromium’s <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue
+1167095</a>, meaning that field names and string values aren’t newline-normalized during the <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data③"><code>multipart/form-data</code></a> serialization – although that is only observable for
+entries not originating from form elements, since those are previously normalized in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#constructing-the-form-data-set" id="ref-for-constructing-the-form-data-set">construct the entry list</a> algorithm. This change of behavior is being spec’d in <a href="https://github.com/whatwg/html/pull/6287">HTML PR #6287</a>.</p>
+    </ul>
+   </div>
    <hr>
    <div class="algorithm" data-algorithm="length of a multipart/form-data payload">
-    <p>The <dfn data-dfn-for="multipart/form-data" data-dfn-type="dfn" data-export id="multipart-form-data-length">length<a class="self-link" href="#multipart-form-data-length"></a></dfn> of a <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data③"><code>multipart/form-data</code></a> payload, given a list of chunks <var>chunks</var> which can be either byte sequences or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file③">File</a></code>s, is the
+    <p>The <dfn data-dfn-for="multipart/form-data" data-dfn-type="dfn" data-export id="multipart-form-data-length">length<a class="self-link" href="#multipart-form-data-length"></a></dfn> of a <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data④"><code>multipart/form-data</code></a> payload, given a list of chunks <var>chunks</var> which can be either byte sequences or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file③">File</a></code>s, is the
 result of running the following steps:</p>
     <ol>
      <li data-md>
@@ -302,7 +313,7 @@ result of running the following steps:</p>
    <div class="XXX">
     <p>🤷 </p>
     <p>Gecko and Chromium seem to have wildly different behaviors for <code class="highlight"><a class="idl-code" data-link-type="interface" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body">Body</a><c- p>.</c->prototype<c- p>.</c-><a class="idl-code" data-link-type="method" href="https://fetch.spec.whatwg.org/#dom-body-formdata" id="ref-for-dom-body-formdata">formData</a><c- p>()</c-></code>,
-  and there’s also a Web Extensions API that parses <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data④"><code>multipart/form-data</code></a> and that
+  and there’s also a Web Extensions API that parses <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data⑤"><code>multipart/form-data</code></a> and that
   in both Gecko and Chromium seems to be completely independent from the parser in <code class="idl"><a data-link-type="idl" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body①">Body</a></code> (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>): </p>
 <pre class="lang-js highlight" style="color: #666666">chrome<c- p>.</c->webRequest<c- p>.</c->onBeforeRequest<c- p>.</c->addListener<c- p>(</c->
   <c- p>(</c->details<c- p>)</c-> <c- p>=></c-> <c- p>{</c->
@@ -407,6 +418,12 @@ if ("serviceWorker" in navigator) {
    <a href="https://w3c.github.io/FileAPI/#dfn-type">https://w3c.github.io/FileAPI/#dfn-type</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dfn-type">2. multipart/form-data serializing</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-constructing-the-form-data-set">
+   <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#constructing-the-form-data-set">https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#constructing-the-form-data-set</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-constructing-the-form-data-set">2. multipart/form-data serializing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-ascii-alphanumeric">
@@ -616,6 +633,11 @@ if ("serviceWorker" in navigator) {
      <li><span class="dfn-paneled" id="term-for-dfn-type">type</span>
     </ul>
    <li>
+    <a data-link-type="biblio">[HTML]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-constructing-the-form-data-set">constructing the entry list</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[INFRA]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-ascii-alphanumeric">ascii alphanumeric</span>
@@ -675,6 +697,8 @@ if ("serviceWorker" in navigator) {
    <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/">Fetch Standard</a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
    <dt id="biblio-fileapi">[FileAPI]
    <dd>Marijn Kruisselbrink; Arun Ranganathan. <a href="https://w3c.github.io/FileAPI/">File API</a>. URL: <a href="https://w3c.github.io/FileAPI/">https://w3c.github.io/FileAPI/</a>
+   <dt id="biblio-html">[HTML]
+   <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-infra">[INFRA]
    <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/">Infra Standard</a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
    <dt id="biblio-streams">[STREAMS]
@@ -721,8 +745,8 @@ if ("serviceWorker" in navigator) {
   <aside class="dfn-panel" data-for="multipart-form-data">
    <b><a href="#multipart-form-data">#multipart-form-data</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-multipart-form-data①">2. multipart/form-data serializing</a> <a href="#ref-for-multipart-form-data②">(2)</a> <a href="#ref-for-multipart-form-data③">(3)</a>
-    <li><a href="#ref-for-multipart-form-data④">3. multipart/form-data parsing</a>
+    <li><a href="#ref-for-multipart-form-data①">2. multipart/form-data serializing</a> <a href="#ref-for-multipart-form-data②">(2)</a> <a href="#ref-for-multipart-form-data③">(3)</a> <a href="#ref-for-multipart-form-data④">(4)</a>
+    <li><a href="#ref-for-multipart-form-data⑤">3. multipart/form-data parsing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="multipart-form-data-boundary">

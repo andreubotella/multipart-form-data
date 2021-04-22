@@ -112,8 +112,10 @@ of chunks, each of which can be either a byte sequence or a {{File}}:
             <code>multipart/form-data</code> name</a> given |value|'s {{File/name}} with |encoding|
             and <a for="escape name"><var ignore>isFilename</var></a> set to true, followed by
             0x22 0x0D 0x0A (" CR LF), to |chunk|.
+        1.  Let |type| be |value|'s {{Blob/type}}, if it is not the empty string, or
+            "<code>application/octet-stream</code>" otherwise.
         1.  Append `<code>Content-Type: </code>`, followed by the result of [=isomorphic encoding=]
-            |value|'s {{Blob/type}}, to |chunk|.
+            |type|, to |chunk|.
         1.  Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to |chunk|.
         1.  Append |chunk|, followed by |value|, followed by the byte sequence 0x0D 0x0A (CR LF), to
             |output chunks|.

@@ -12,6 +12,10 @@ Abstract: A web-spec definition of the <a><code>multipart/form-data</code></a> f
           algorithms, meant for inclusion in the WHATWG standards.
 </pre>
 
+<pre class="anchors">
+url:https://httpwg.org/specs/rfc7230.html#header.fields;text:field-name;type:dfn;spec:http
+</pre>
+
 Introduction {#intro}
 =====================
 
@@ -206,13 +210,120 @@ To <dfn export>create a <code>multipart/form-data</code> readable stream</dfn> f
 <code>multipart/form-data</code> parsing {#parsing}
 ===================================================
 
-<div class="XXX">
-  <p>🤷
+<div algorithm="multipart/form-data parser">
 
-  <p>Gecko and Chromium seem to have wildly different behaviors for
-  <code highlight="js"><a interface>Body</a>.prototype.<a method for="Body">formData</a>()</code>,
-  and there's also a Web Extensions API that parses <a><code>multipart/form-data</code></a> and that
-  in both Gecko and Chromium seems to be completely independent from the parser in {{Body}} (see <a
+The <dfn export><code>multipart/form-data</code> parser</dfn> takes a byte sequence |input| and a
+[=MIME type=] |mimeType|, and returns either an [=entry list=] or failure:
+
+1.  [=Assert=]: |mimeType|'s [=essence=] is "<code>multipart/form-data</code>".
+1.  If |mimeType|'s [=MIME type/parameters=]["<code>boundary</code>"] does not [=map/exist=], return
+    failure. Otherwise, let |boundary| be the result of [=UTF-8 decoding=] |mimeType|'s [=MIME
+    type/parameters=]["<code>boundary</code>"].
+
+    <p class="XXX">The definition of [=MIME type=] in [[MIMESNIFF]] has the [=MIME
+    type/parameter=] values being [=ASCII strings=], but the [=parse a MIME type=] algorithm can
+    create [=MIME type records=] containing non-ASCII parameter values. See <a
+    href="https://github.com/whatwg/mimesniff/issues/141">whatwg/mimesniff issue #141</a>. Gecko and
+    WebKit accept non-ASCII boundary strings and then expect them [=UTF-8 encoded=] in the request
+    body; Chromium rejects them instead.
+1.  Let |entry list| be an empty [=entry list=].
+1.  Let |position| be a pointer to a byte in |input|, initially pointing at the first byte.
+1.  While true:
+    1.  If |position| points to a sequence of bytes starting with 0x2D 0x2D (`<code>--</code>`)
+        followed by |boundary|, advance |position| by 2 + the length of |boundary|. Otherwise,
+        return failure.
+    1.  If |position| points to the sequence of bytes 0x2D 0x2D 0x0D 0x0A (`<code>--</code>`
+        followed by CR LF) followed by the end of |input|, return |entry list|.
+    1.  If |position| does not point to a sequence of bytes starting with 0x0D 0x0A (CR LF), return
+        failure.
+    1.  Advance |position| by 2. (This skips past the newline.)
+    1.  Let |name|, |filename| and |contentType| be the result of <a>parsing
+        <code>multipart/form-data</code> headers</a> on |input| and |position|, if the result is not
+        failure. Otherwise, return failure.
+    1.  Advance |position| by 2. (This skips past the empty line that marks the end of the headers.)
+    1.  Let |body| be the empty byte sequence.
+    1.  <i>Body loop</i>: While |position| is not past the end of |input|:
+        1.  Append the code point at |position| to |body|.
+        1.  If |body| ends with |boundary|:
+            1.  Remove the last 4 + (length of |boundary|) bytes from |body|.
+            1.  Decrease |position| by 4 + (length of |boundary|).
+            1.  Break out of <i>body loop</i>.
+    1.  If |position| does not point to a sequence of bytes starting with 0x0D 0x0A (CR LF), return
+        failure. Otherwise, advance |position| by 2.
+    1.  If |filename| is not null:
+        1.  If |contentType| is null, set |contentType| to "<code>text/plain</code>".
+        1.  If |contentType| is not an [=ASCII string=], set |contentType| to the empty string.
+        1.  Let |value| be a new {{File}} object with name |filename|, type |contentType|, and body
+            |body|.
+
+        Otherwise:
+        1.  Let |value| be the [=UTF-8 decode without BOM|UTF-8 decoding without BOM=] of |body|.
+    1.  Add |name| / |value| to |entry list|.
+
+</div>
+
+<div algorithm="parse multipart/form-data headers">
+
+To <dfn>parse <code>multipart/form-data</code> headers</dfn>, given a byte sequence <var
+ignore>input</var> and a pointer into it |position|, run the following steps:
+
+1.  Let |name|, |filename| and |contentType| be null.
+1.  While true:
+    1.  If |position| points to a sequence of bytes starting with 0x0D 0x0A (CR LF):
+        1.  If |name| is null, return failure.
+        1.  Return |name|, |filename| and |contentType|.
+    1.  Let |header name| be the result of collecting a sequence of bytes that are not 0x0A (LF),
+        0x0D (CR) or 0x3A (:), given |position|.
+    1.  Remove any [=HTTP tab or space bytes=] from the start or end of |header name|.
+    1.  If |header name| does not match the <a spec=http>field-name</a> token production, return
+        failure.
+    1.  If the byte at |position| is not 0x3A (:), return failure.
+    1.  Advance |position| by 1.
+    1.  Collect a sequence of bytes that are [=HTTP tab or space bytes=] given |position|. (Do
+        nothing with those bytes.)
+    1.  [=Byte-lowercase=] |header name| and switch on the result:
+        <dl class="switch">
+        : `<code>content-disposition</code>`
+        ::  1.  Set |name| and |filename| to null.
+            1.  If |position| does not point to a sequence of bytes starting with
+                `<code>form-data; name="</code>`, return failure.
+            1.  Advance |position| so it points at the byte after the next 0x22 (") byte (the one in
+                the sequence of bytes matched above).
+            1.  Set |name| to the [=UTF-8 decode without BOM|UTF-8 decoding without BOM=] of the
+                result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR) or 0x22
+                ("), given |position|.
+            1.  If the byte at |position| is not 0x22 ("), return failure. Otherwise, advance
+                |position| by 1.
+            1.  If |position| points to a sequence of bytes starting with
+                `<code>; filename="</code>`:
+                1.  Advance |position| so it points at the byte after the next 0x22 (") byte (the
+                    one in the sequence of bytes matched above).
+                1.  Set |filename| to the [=UTF-8 decode without BOM|UTF-8 decoding without BOM=] of
+                    the result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR)
+                    or 0x22 ("), given |position|.
+                1.  If the byte at |position| is not 0x22 ("), return failure. Otherwise, advance
+                    |position| by 1.
+        : `<code>content-type</code>`
+        ::  1.  Let |header value| be the result of collecting a sequence of bytes that are not 0x0A
+                (LF) or 0x0D (CR), given |position|.
+            1.  Remove any [=HTTP tab or space bytes=] from the end of |header value|.
+            1.  Set |contentType| to the [=isomorphic decoding=] of |header value|.
+        : Otherwise
+        ::  Collect a sequence of bytes that are not 0x0A (LF) or 0x0D (CR), given |position|. (Do
+            nothing with those bytes.)
+    1.  If |position| does not point to a sequence of bytes starting with 0x0D 0x0A (CR LF), return
+        failure. Otherwise, advance |position| by 2 (past the newline).
+
+</div>
+
+<div class="XXX">
+  <p>This algorithm is a first attempt at defining a <a><code>multipart/form-data</code></a> parser,
+  which doesn't yet match any implementation of
+  <code highlight="js"><a interface>Body</a>.prototype.<a method for="Body">formData</a>()</code>
+  because they disagree at various points.
+
+  <p>Note that Gecko and Chromium also implement a Web Extensions API that parses
+  <code>multipart/form-data</code> independently from the parser in {{Body}} (see <a
   href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>):
 
   <xmp class="lang-js" style="color: #666666">

@@ -28,7 +28,7 @@
     <a class="logo" href="https://whatwg.org/"> <img alt="WHATWG" crossorigin height="100" src="https://resources.whatwg.org/logo.svg"> </a> 
    <hgroup>
     <h1 class="p-name no-ref" id="title"><code>multipart/form-data</code></h1>
-    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-04-22">22 April 2021</time></span></h2>
+    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-04-23">23 April 2021</time></span></h2>
    </hgroup>
    <div data-fill-with="spec-metadata">
     <dl>
@@ -308,11 +308,175 @@ result of running the following steps:</p>
     </ol>
    </div>
    <h2 class="heading settled" data-level="3" id="parsing"><span class="secno">3. </span><span class="content"><code>multipart/form-data</code> parsing</span><a class="self-link" href="#parsing"></a></h2>
+   <div class="algorithm" data-algorithm="multipart/form-data parser">
+    <p>The <dfn data-dfn-type="dfn" data-export id="multipart-form-data-parser"><code>multipart/form-data</code> parser<a class="self-link" href="#multipart-form-data-parser"></a></dfn> takes a byte sequence <var>input</var> and a <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type">MIME type</a> <var>mimeType</var>, and returns either an <a data-link-type="dfn" href="#entry-list" id="ref-for-entry-list②">entry list</a> or failure:</p>
+    <ol>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert④">Assert</a>: <var>mimeType</var>’s <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type-essence" id="ref-for-mime-type-essence">essence</a> is "<code>multipart/form-data</code>".</p>
+     <li data-md>
+      <p>If <var>mimeType</var>’s <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parameters" id="ref-for-parameters">parameters</a>["<code>boundary</code>"] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exist</a>, return
+failure. Otherwise, let <var>boundary</var> be the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-decode" id="ref-for-utf-8-decode">UTF-8 decoding</a> <var>mimeType</var>’s <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parameters" id="ref-for-parameters①">parameters</a>["<code>boundary</code>"].</p>
+      <p class="XXX">The definition of <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type①">MIME type</a> in <a data-link-type="biblio" href="#biblio-mimesniff">[MIMESNIFF]</a> has the <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parameters" id="ref-for-parameters②">parameter</a> values being <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ascii-string" id="ref-for-ascii-string">ASCII strings</a>, but the <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parse-a-mime-type" id="ref-for-parse-a-mime-type">parse a MIME type</a> algorithm can
+create <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type②">MIME type records</a> containing non-ASCII parameter values. See <a href="https://github.com/whatwg/mimesniff/issues/141">whatwg/mimesniff issue #141</a>. Gecko and
+WebKit accept non-ASCII boundary strings and then expect them <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-encode" id="ref-for-utf-8-encode">UTF-8 encoded</a> in the request
+body; Chromium rejects them instead. </p>
+     <li data-md>
+      <p>Let <var>entry list</var> be an empty <a data-link-type="dfn" href="#entry-list" id="ref-for-entry-list③">entry list</a>.</p>
+     <li data-md>
+      <p>Let <var>position</var> be a pointer to a byte in <var>input</var>, initially pointing at the first byte.</p>
+     <li data-md>
+      <p>While true:</p>
+      <ol>
+       <li data-md>
+        <p>If <var>position</var> points to a sequence of bytes starting with 0x2D 0x2D (`<code>--</code>`)
+followed by <var>boundary</var>, advance <var>position</var> by 2 + the length of <var>boundary</var>. Otherwise,
+return failure.</p>
+       <li data-md>
+        <p>If <var>position</var> points to the sequence of bytes 0x2D 0x2D 0x0D 0x0A (`<code>--</code>`
+followed by CR LF) followed by the end of <var>input</var>, return <var>entry list</var>.</p>
+       <li data-md>
+        <p>If <var>position</var> does not point to a sequence of bytes starting with 0x0D 0x0A (CR LF), return
+failure.</p>
+       <li data-md>
+        <p>Advance <var>position</var> by 2. (This skips past the newline.)</p>
+       <li data-md>
+        <p>Let <var>name</var>, <var>filename</var> and <var>contentType</var> be the result of <a data-link-type="dfn" href="#parse-multipart-form-data-headers" id="ref-for-parse-multipart-form-data-headers">parsing <code>multipart/form-data</code> headers</a> on <var>input</var> and <var>position</var>, if the result is not
+failure. Otherwise, return failure.</p>
+       <li data-md>
+        <p>Advance <var>position</var> by 2. (This skips past the empty line that marks the end of the headers.)</p>
+       <li data-md>
+        <p>Let <var>body</var> be the empty byte sequence.</p>
+       <li data-md>
+        <p><i>Body loop</i>: While <var>position</var> is not past the end of <var>input</var>:</p>
+        <ol>
+         <li data-md>
+          <p>Append the code point at <var>position</var> to <var>body</var>.</p>
+         <li data-md>
+          <p>If <var>body</var> ends with <var>boundary</var>:</p>
+          <ol>
+           <li data-md>
+            <p>Remove the last 4 + (length of <var>boundary</var>) bytes from <var>body</var>.</p>
+           <li data-md>
+            <p>Decrease <var>position</var> by 4 + (length of <var>boundary</var>).</p>
+           <li data-md>
+            <p>Break out of <i>body loop</i>.</p>
+          </ol>
+        </ol>
+       <li data-md>
+        <p>If <var>position</var> does not point to a sequence of bytes starting with 0x0D 0x0A (CR LF), return
+failure. Otherwise, advance <var>position</var> by 2.</p>
+       <li data-md>
+        <p>If <var>filename</var> is not null:</p>
+        <ol>
+         <li data-md>
+          <p>If <var>contentType</var> is null, set <var>contentType</var> to "<code>text/plain</code>".</p>
+         <li data-md>
+          <p>If <var>contentType</var> is not an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ascii-string" id="ref-for-ascii-string①">ASCII string</a>, set <var>contentType</var> to the empty string.</p>
+         <li data-md>
+          <p>Let <var>value</var> be a new <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file⑦">File</a></code> object with name <var>filename</var>, type <var>contentType</var>, and body <var>body</var>.</p>
+        </ol>
+        <p>Otherwise:</p>
+        <ol>
+         <li data-md>
+          <p>Let <var>value</var> be the <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-decode-without-bom" id="ref-for-utf-8-decode-without-bom">UTF-8 decoding without BOM</a> of <var>body</var>.</p>
+        </ol>
+       <li data-md>
+        <p>Add <var>name</var> / <var>value</var> to <var>entry list</var>.</p>
+      </ol>
+    </ol>
+   </div>
+   <div class="algorithm" data-algorithm="parse multipart/form-data headers">
+    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="parse-multipart-form-data-headers">parse <code>multipart/form-data</code> headers</dfn>, given a byte sequence <var>input</var> and a pointer into it <var>position</var>, run the following steps:</p>
+    <ol>
+     <li data-md>
+      <p>Let <var>name</var>, <var>filename</var> and <var>contentType</var> be null.</p>
+     <li data-md>
+      <p>While true:</p>
+      <ol>
+       <li data-md>
+        <p>If <var>position</var> points to a sequence of bytes starting with 0x0D 0x0A (CR LF):</p>
+        <ol>
+         <li data-md>
+          <p>If <var>name</var> is null, return failure.</p>
+         <li data-md>
+          <p>Return <var>name</var>, <var>filename</var> and <var>contentType</var>.</p>
+        </ol>
+       <li data-md>
+        <p>Let <var>header name</var> be the result of collecting a sequence of bytes that are not 0x0A (LF),
+0x0D (CR) or 0x3A (:), given <var>position</var>.</p>
+       <li data-md>
+        <p>Remove any <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#http-tab-or-space-byte" id="ref-for-http-tab-or-space-byte">HTTP tab or space bytes</a> from the start or end of <var>header name</var>.</p>
+       <li data-md>
+        <p>If <var>header name</var> does not match the <a data-link-type="dfn" href="https://httpwg.org/specs/rfc7230.html#header.fields" id="ref-for-header.fields">field-name</a> token production, return
+failure.</p>
+       <li data-md>
+        <p>If the byte at <var>position</var> is not 0x3A (:), return failure.</p>
+       <li data-md>
+        <p>Advance <var>position</var> by 1.</p>
+       <li data-md>
+        <p>Collect a sequence of bytes that are <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#http-tab-or-space-byte" id="ref-for-http-tab-or-space-byte①">HTTP tab or space bytes</a> given <var>position</var>. (Do
+nothing with those bytes.)</p>
+       <li data-md>
+        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-lowercase" id="ref-for-byte-lowercase">Byte-lowercase</a> <var>header name</var> and switch on the result:</p>
+        <dl class="switch">
+         <dt data-md>`<code>content-disposition</code>`
+         <dd data-md>
+          <ol>
+           <li data-md>
+            <p>Set <var>name</var> and <var>filename</var> to null.</p>
+           <li data-md>
+            <p>If <var>position</var> does not point to a sequence of bytes starting with
+`<code>form-data; name="</code>`, return failure.</p>
+           <li data-md>
+            <p>Advance <var>position</var> so it points at the byte after the next 0x22 (") byte (the one in
+the sequence of bytes matched above).</p>
+           <li data-md>
+            <p>Set <var>name</var> to the <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-decode-without-bom" id="ref-for-utf-8-decode-without-bom①">UTF-8 decoding without BOM</a> of the
+result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR) or 0x22
+("), given <var>position</var>.</p>
+           <li data-md>
+            <p>If the byte at <var>position</var> is not 0x22 ("), return failure. Otherwise, advance <var>position</var> by 1.</p>
+           <li data-md>
+            <p>If <var>position</var> points to a sequence of bytes starting with
+`<code>; filename="</code>`:</p>
+            <ol>
+             <li data-md>
+              <p>Advance <var>position</var> so it points at the byte after the next 0x22 (") byte (the
+one in the sequence of bytes matched above).</p>
+             <li data-md>
+              <p>Set <var>filename</var> to the <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-decode-without-bom" id="ref-for-utf-8-decode-without-bom②">UTF-8 decoding without BOM</a> of
+the result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR)
+or 0x22 ("), given <var>position</var>.</p>
+             <li data-md>
+              <p>If the byte at <var>position</var> is not 0x22 ("), return failure. Otherwise, advance <var>position</var> by 1.</p>
+            </ol>
+          </ol>
+         <dt data-md>`<code>content-type</code>`
+         <dd data-md>
+          <ol>
+           <li data-md>
+            <p>Let <var>header value</var> be the result of collecting a sequence of bytes that are not 0x0A
+(LF) or 0x0D (CR), given <var>position</var>.</p>
+           <li data-md>
+            <p>Remove any <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#http-tab-or-space-byte" id="ref-for-http-tab-or-space-byte②">HTTP tab or space bytes</a> from the end of <var>header value</var>.</p>
+           <li data-md>
+            <p>Set <var>contentType</var> to the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#isomorphic-decode" id="ref-for-isomorphic-decode">isomorphic decoding</a> of <var>header value</var>.</p>
+          </ol>
+         <dt data-md>Otherwise
+         <dd data-md>
+          <p>Collect a sequence of bytes that are not 0x0A (LF) or 0x0D (CR), given <var>position</var>. (Do
+nothing with those bytes.)</p>
+        </dl>
+       <li data-md>
+        <p>If <var>position</var> does not point to a sequence of bytes starting with 0x0D 0x0A (CR LF), return
+failure. Otherwise, advance <var>position</var> by 2 (past the newline).</p>
+      </ol>
+    </ol>
+   </div>
    <div class="XXX">
-    <p>🤷 </p>
-    <p>Gecko and Chromium seem to have wildly different behaviors for <code class="highlight"><a class="idl-code" data-link-type="interface" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body">Body</a><c- p>.</c->prototype<c- p>.</c-><a class="idl-code" data-link-type="method" href="https://fetch.spec.whatwg.org/#dom-body-formdata" id="ref-for-dom-body-formdata">formData</a><c- p>()</c-></code>,
-  and there’s also a Web Extensions API that parses <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data⑤"><code>multipart/form-data</code></a> and that
-  in both Gecko and Chromium seems to be completely independent from the parser in <code class="idl"><a data-link-type="idl" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body①">Body</a></code> (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>): </p>
+    <p>This algorithm is a first attempt at defining a <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data⑤"><code>multipart/form-data</code></a> parser,
+  which doesn’t yet match any implementation of <code class="highlight"><a class="idl-code" data-link-type="interface" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body">Body</a><c- p>.</c->prototype<c- p>.</c-><a class="idl-code" data-link-type="method" href="https://fetch.spec.whatwg.org/#dom-body-formdata" id="ref-for-dom-body-formdata">formData</a><c- p>()</c-></code> because they disagree at various points. </p>
+    <p>Note that Gecko and Chromium also implement a Web Extensions API that parses <code>multipart/form-data</code> independently from the parser in <code class="idl"><a data-link-type="idl" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body①">Body</a></code> (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>): </p>
 <pre class="lang-js highlight" style="color: #666666">chrome<c- p>.</c->webRequest<c- p>.</c->onBeforeRequest<c- p>.</c->addListener<c- p>(</c->
   <c- p>(</c->details<c- p>)</c-> <c- p>=></c-> <c- p>{</c->
     <c- c1>// Returns an object mapping names to an array of values represented by</c->
@@ -348,7 +512,9 @@ if ("serviceWorker" in navigator) {
    <li><a href="#multipart-form-data-length">length</a><span>, in §2</span>
    <li><a href="#multipart-form-data">multipart/form-data</a><span>, in §1</span>
    <li><a href="#multipart-form-data-chunk-serializer">multipart/form-data chunk serializer</a><span>, in §2</span>
+   <li><a href="#multipart-form-data-parser">multipart/form-data parser</a><span>, in §3</span>
    <li><a href="#entry-list-name">name</a><span>, in §1</span>
+   <li><a href="#parse-multipart-form-data-headers">parse multipart/form-data headers</a><span>, in §3</span>
    <li><a href="#entry-list-value">value</a><span>, in §1</span>
   </ul>
   <aside class="dfn-panel" data-for="term-for-encode">
@@ -375,6 +541,24 @@ if ("serviceWorker" in navigator) {
     <li><a href="#ref-for-utf-8">2. multipart/form-data serializing</a> <a href="#ref-for-utf-8①">(2)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-utf-8-decode">
+   <a href="https://encoding.spec.whatwg.org/#utf-8-decode">https://encoding.spec.whatwg.org/#utf-8-decode</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-utf-8-decode">3. multipart/form-data parsing</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-utf-8-decode-without-bom">
+   <a href="https://encoding.spec.whatwg.org/#utf-8-decode-without-bom">https://encoding.spec.whatwg.org/#utf-8-decode-without-bom</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-utf-8-decode-without-bom">3. multipart/form-data parsing</a> <a href="#ref-for-utf-8-decode-without-bom①">(2)</a> <a href="#ref-for-utf-8-decode-without-bom②">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-utf-8-encode">
+   <a href="https://encoding.spec.whatwg.org/#utf-8-encode">https://encoding.spec.whatwg.org/#utf-8-encode</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-utf-8-encode">3. multipart/form-data parsing</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-body">
    <a href="https://fetch.spec.whatwg.org/#body">https://fetch.spec.whatwg.org/#body</a><b>Referenced in:</b>
    <ul>
@@ -387,11 +571,18 @@ if ("serviceWorker" in navigator) {
     <li><a href="#ref-for-dom-body-formdata">3. multipart/form-data parsing</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-http-tab-or-space-byte">
+   <a href="https://fetch.spec.whatwg.org/#http-tab-or-space-byte">https://fetch.spec.whatwg.org/#http-tab-or-space-byte</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-http-tab-or-space-byte">3. multipart/form-data parsing</a> <a href="#ref-for-http-tab-or-space-byte①">(2)</a> <a href="#ref-for-http-tab-or-space-byte②">(3)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-dfn-file">
    <a href="https://w3c.github.io/FileAPI/#dfn-file">https://w3c.github.io/FileAPI/#dfn-file</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dfn-file">1. Introduction</a>
     <li><a href="#ref-for-dfn-file①">2. multipart/form-data serializing</a> <a href="#ref-for-dfn-file②">(2)</a> <a href="#ref-for-dfn-file③">(3)</a> <a href="#ref-for-dfn-file④">(4)</a> <a href="#ref-for-dfn-file⑤">(5)</a> <a href="#ref-for-dfn-file⑥">(6)</a>
+    <li><a href="#ref-for-dfn-file⑦">3. multipart/form-data parsing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dfn-name">
@@ -424,16 +615,29 @@ if ("serviceWorker" in navigator) {
     <li><a href="#ref-for-constructing-the-form-data-set">2. multipart/form-data serializing</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-header.fields">
+   <a href="https://httpwg.org/specs/rfc7230.html#header.fields">https://httpwg.org/specs/rfc7230.html#header.fields</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-header.fields">3. multipart/form-data parsing</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-ascii-alphanumeric">
    <a href="https://infra.spec.whatwg.org/#ascii-alphanumeric">https://infra.spec.whatwg.org/#ascii-alphanumeric</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-ascii-alphanumeric">2. multipart/form-data serializing</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-ascii-string">
+   <a href="https://infra.spec.whatwg.org/#ascii-string">https://infra.spec.whatwg.org/#ascii-string</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-ascii-string">3. multipart/form-data parsing</a> <a href="#ref-for-ascii-string①">(2)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-assert">
    <a href="https://infra.spec.whatwg.org/#assert">https://infra.spec.whatwg.org/#assert</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-assert">2. multipart/form-data serializing</a> <a href="#ref-for-assert①">(2)</a> <a href="#ref-for-assert②">(3)</a> <a href="#ref-for-assert③">(4)</a>
+    <li><a href="#ref-for-assert④">3. multipart/form-data parsing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-byte-sequence">
@@ -442,10 +646,22 @@ if ("serviceWorker" in navigator) {
     <li><a href="#ref-for-byte-sequence">2. multipart/form-data serializing</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-byte-lowercase">
+   <a href="https://infra.spec.whatwg.org/#byte-lowercase">https://infra.spec.whatwg.org/#byte-lowercase</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-byte-lowercase">3. multipart/form-data parsing</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-javascript-string-convert">
    <a href="https://infra.spec.whatwg.org/#javascript-string-convert">https://infra.spec.whatwg.org/#javascript-string-convert</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-javascript-string-convert">2. multipart/form-data serializing</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-map-exists">
+   <a href="https://infra.spec.whatwg.org/#map-exists">https://infra.spec.whatwg.org/#map-exists</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-map-exists">3. multipart/form-data parsing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-list-iterate">
@@ -458,6 +674,12 @@ if ("serviceWorker" in navigator) {
    <a href="https://infra.spec.whatwg.org/#implementation-defined">https://infra.spec.whatwg.org/#implementation-defined</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-implementation-defined">2. multipart/form-data serializing</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-isomorphic-decode">
+   <a href="https://infra.spec.whatwg.org/#isomorphic-decode">https://infra.spec.whatwg.org/#isomorphic-decode</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-isomorphic-decode">3. multipart/form-data parsing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-isomorphic-encode">
@@ -483,6 +705,36 @@ if ("serviceWorker" in navigator) {
    <ul>
     <li><a href="#ref-for-scalar-value-string">1. Introduction</a> <a href="#ref-for-scalar-value-string①">(2)</a>
     <li><a href="#ref-for-scalar-value-string②">2. multipart/form-data serializing</a> <a href="#ref-for-scalar-value-string③">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-mime-type-essence">
+   <a href="https://mimesniff.spec.whatwg.org/#mime-type-essence">https://mimesniff.spec.whatwg.org/#mime-type-essence</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-mime-type-essence">3. multipart/form-data parsing</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-mime-type">
+   <a href="https://mimesniff.spec.whatwg.org/#mime-type">https://mimesniff.spec.whatwg.org/#mime-type</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-mime-type">3. multipart/form-data parsing</a> <a href="#ref-for-mime-type①">(2)</a> <a href="#ref-for-mime-type②">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-mime-type">
+   <a href="https://mimesniff.spec.whatwg.org/#mime-type">https://mimesniff.spec.whatwg.org/#mime-type</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-mime-type">3. multipart/form-data parsing</a> <a href="#ref-for-mime-type①">(2)</a> <a href="#ref-for-mime-type②">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-parameters">
+   <a href="https://mimesniff.spec.whatwg.org/#parameters">https://mimesniff.spec.whatwg.org/#parameters</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-parameters">3. multipart/form-data parsing</a> <a href="#ref-for-parameters①">(2)</a> <a href="#ref-for-parameters②">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-parse-a-mime-type">
+   <a href="https://mimesniff.spec.whatwg.org/#parse-a-mime-type">https://mimesniff.spec.whatwg.org/#parse-a-mime-type</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-parse-a-mime-type">3. multipart/form-data parsing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-readablestream">
@@ -614,12 +866,16 @@ if ("serviceWorker" in navigator) {
      <li><span class="dfn-paneled" id="term-for-encoding">encoding</span>
      <li><span class="dfn-paneled" id="term-for-get-an-output-encoding">get an output encoding</span>
      <li><span class="dfn-paneled" id="term-for-utf-8">utf-8</span>
+     <li><span class="dfn-paneled" id="term-for-utf-8-decode">utf-8 decode</span>
+     <li><span class="dfn-paneled" id="term-for-utf-8-decode-without-bom">utf-8 decode without bom</span>
+     <li><span class="dfn-paneled" id="term-for-utf-8-encode">utf-8 encode</span>
     </ul>
    <li>
     <a data-link-type="biblio">[FETCH]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-body">Body</span>
      <li><span class="dfn-paneled" id="term-for-dom-body-formdata">formData()</span>
+     <li><span class="dfn-paneled" id="term-for-http-tab-or-space-byte">http tab or space byte</span>
     </ul>
    <li>
     <a data-link-type="biblio">[FileAPI]</a> defines the following terms:
@@ -636,18 +892,36 @@ if ("serviceWorker" in navigator) {
      <li><span class="dfn-paneled" id="term-for-constructing-the-form-data-set">constructing the entry list</span>
     </ul>
    <li>
+    <a data-link-type="biblio">[http]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-header.fields">field-name</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[INFRA]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-ascii-alphanumeric">ascii alphanumeric</span>
+     <li><span class="dfn-paneled" id="term-for-ascii-string">ascii string</span>
      <li><span class="dfn-paneled" id="term-for-assert">assert</span>
      <li><span class="dfn-paneled" id="term-for-byte-sequence">byte sequence</span>
+     <li><span class="dfn-paneled" id="term-for-byte-lowercase">byte-lowercase</span>
      <li><span class="dfn-paneled" id="term-for-javascript-string-convert">convert</span>
+     <li><span class="dfn-paneled" id="term-for-map-exists">exist</span>
      <li><span class="dfn-paneled" id="term-for-list-iterate">for each</span>
      <li><span class="dfn-paneled" id="term-for-implementation-defined">implementation-defined</span>
+     <li><span class="dfn-paneled" id="term-for-isomorphic-decode">isomorphic decode</span>
      <li><span class="dfn-paneled" id="term-for-isomorphic-encode">isomorphic encode</span>
      <li><span class="dfn-paneled" id="term-for-struct-item">item</span>
      <li><span class="dfn-paneled" id="term-for-list-remove">remove</span>
      <li><span class="dfn-paneled" id="term-for-scalar-value-string">scalar value string</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[MIMESNIFF]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-mime-type-essence">essence</span>
+     <li><span class="dfn-paneled" id="term-for-mime-type">mime type</span>
+     <li><span class="dfn-paneled" id="term-for-mime-type①">mime type record</span>
+     <li><span class="dfn-paneled" id="term-for-parameters">parameters</span>
+     <li><span class="dfn-paneled" id="term-for-parse-a-mime-type">parse a mime type</span>
     </ul>
    <li>
     <a data-link-type="biblio">[STREAMS]</a> defines the following terms:
@@ -699,6 +973,8 @@ if ("serviceWorker" in navigator) {
    <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-infra">[INFRA]
    <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/">Infra Standard</a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
+   <dt id="biblio-mimesniff">[MIMESNIFF]
+   <dd>Gordon P. Hemsley. <a href="https://mimesniff.spec.whatwg.org/">MIME Sniffing Standard</a>. Living Standard. URL: <a href="https://mimesniff.spec.whatwg.org/">https://mimesniff.spec.whatwg.org/</a>
    <dt id="biblio-streams">[STREAMS]
    <dd>Adam Rice; Domenic Denicola; 吉野剛史 (Takeshi Yoshino). <a href="https://streams.spec.whatwg.org/">Streams Standard</a>. Living Standard. URL: <a href="https://streams.spec.whatwg.org/">https://streams.spec.whatwg.org/</a>
    <dt id="biblio-url">[URL]
@@ -720,6 +996,7 @@ if ("serviceWorker" in navigator) {
    <ul>
     <li><a href="#ref-for-entry-list">1. Introduction</a>
     <li><a href="#ref-for-entry-list①">2. multipart/form-data serializing</a>
+    <li><a href="#ref-for-entry-list②">3. multipart/form-data parsing</a> <a href="#ref-for-entry-list③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="entry-list-entry">
@@ -769,6 +1046,12 @@ if ("serviceWorker" in navigator) {
    <b><a href="#escape-name-isfilename">#escape-name-isfilename</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-escape-name-isfilename">2. multipart/form-data serializing</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="parse-multipart-form-data-headers">
+   <b><a href="#parse-multipart-form-data-headers">#parse-multipart-form-data-headers</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-parse-multipart-form-data-headers">3. multipart/form-data parsing</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */

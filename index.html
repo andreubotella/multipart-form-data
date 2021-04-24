@@ -434,6 +434,7 @@ the sequence of bytes matched above).</p>
             <p>Set <var>name</var> to the <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-decode-without-bom" id="ref-for-utf-8-decode-without-bom①">UTF-8 decoding without BOM</a> of the
 result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR) or 0x22
 ("), given <var>position</var>.</p>
+            <p class="XXX">The parsing of names and filenames is being worked on in <a href="http://github.com/andreubotella/multipart-form-data/issues/1">issue #1</a>. </p>
            <li data-md>
             <p>If the byte at <var>position</var> is not 0x22 ("), return failure. Otherwise, advance <var>position</var> by 1.</p>
            <li data-md>
@@ -447,6 +448,8 @@ one in the sequence of bytes matched above).</p>
               <p>Set <var>filename</var> to the <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-decode-without-bom" id="ref-for-utf-8-decode-without-bom②">UTF-8 decoding without BOM</a> of
 the result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR)
 or 0x22 ("), given <var>position</var>.</p>
+              <p class="XXX">The parsing of names and filenames is being worked on in <a href="http://github.com/andreubotella/multipart-form-data/issues/1">issue
+#1</a>. </p>
              <li data-md>
               <p>If the byte at <var>position</var> is not 0x22 ("), return failure. Otherwise, advance <var>position</var> by 1.</p>
             </ol>

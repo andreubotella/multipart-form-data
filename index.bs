@@ -292,6 +292,9 @@ ignore>input</var> and a pointer into it |position|, run the following steps:
             1.  Set |name| to the [=UTF-8 decode without BOM|UTF-8 decoding without BOM=] of the
                 result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR) or 0x22
                 ("), given |position|.
+
+                <p class=XXX>The parsing of names and filenames is being worked on in <a
+                href="http://github.com/andreubotella/multipart-form-data/issues/1">issue #1</a>.
             1.  If the byte at |position| is not 0x22 ("), return failure. Otherwise, advance
                 |position| by 1.
             1.  If |position| points to a sequence of bytes starting with
@@ -301,6 +304,10 @@ ignore>input</var> and a pointer into it |position|, run the following steps:
                 1.  Set |filename| to the [=UTF-8 decode without BOM|UTF-8 decoding without BOM=] of
                     the result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR)
                     or 0x22 ("), given |position|.
+
+                    <p class=XXX>The parsing of names and filenames is being worked on in <a
+                    href="http://github.com/andreubotella/multipart-form-data/issues/1">issue
+                    #1</a>.
                 1.  If the byte at |position| is not 0x22 ("), return failure. Otherwise, advance
                     |position| by 1.
         : `<code>content-type</code>`

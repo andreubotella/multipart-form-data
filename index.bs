@@ -25,7 +25,7 @@ export for="entry list">name</dfn> (a [=scalar value string=]) and a <dfn export
 list">value</dfn> (either a [=scalar value string=] or a {{File}}).
 
 <p class="XXX">These definitions currently live in the XHR spec as part of the {{FormData}}
-definition, but they should probably be moved to HTML.
+definition, but they should probably be moved to HTML. [[XHR]]
 
 The <dfn export><code>multipart/form-data</code></dfn> format provides a way to encode an [=entry
 list=], which, unlike the <a><code>application/x-www-form-urlencoded</code></a> format, can transmit
@@ -323,9 +323,11 @@ ignore>input</var> and a pointer into it |position|, run the following steps:
 
 </div>
 
+<hr>
+
 <div class="XXX">
-  <p>This algorithm is a first attempt at defining a <a><code>multipart/form-data</code></a> parser,
-  which doesn't yet match any implementation of
+  <p>These algorithms are a first attempt at defining a <a><code>multipart/form-data</code></a>
+  parser, which doesn't yet match any implementation of
   <code highlight="js"><a interface>Body</a>.prototype.<a method for="Body">formData</a>()</code>
   because they disagree at various points.
 

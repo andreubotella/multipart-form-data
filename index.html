@@ -11,7 +11,7 @@
 <script async crossorigin src="https://resources.whatwg.org/file-issue.js"></script>
 <script async crossorigin src="https://resources.whatwg.org/commit-snapshot-shortcut-key.js"></script>
 <script crossorigin defer src="https://resources.whatwg.org/standard-mdn-annos.js"></script>
-  <meta content="Bikeshed version c6f50773a, updated Fri Apr 16 16:45:47 2021 -0700" name="generator">
+  <meta content="Bikeshed version 800b43329, updated Tue May 25 14:13:32 2021 -0700" name="generator">
 <style>/* style-var-click-highlighting */
 
     var { cursor: pointer; }
@@ -28,7 +28,7 @@
     <a class="logo" href="https://whatwg.org/"> <img alt="WHATWG" crossorigin height="100" src="https://resources.whatwg.org/logo.svg"> </a> 
    <hgroup>
     <h1 class="p-name no-ref" id="title"><code>multipart/form-data</code></h1>
-    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-05-04">4 May 2021</time></span></h2>
+    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-06-01">1 June 2021</time></span></h2>
    </hgroup>
    <div data-fill-with="spec-metadata">
     <dl>
@@ -70,7 +70,7 @@
    <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="entry-list">entry list</dfn> is a list of <a data-link-type="dfn" href="#entry-list-entry" id="ref-for-entry-list-entry">entries</a>, typically representing the
 contents of a form. An <dfn class="dfn-paneled" data-dfn-for="entry list" data-dfn-type="dfn" data-export id="entry-list-entry">entry</dfn> is a tuple consisting of a <dfn class="dfn-paneled" data-dfn-for="entry list" data-dfn-type="dfn" data-export id="entry-list-name">name</dfn> (a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#scalar-value-string" id="ref-for-scalar-value-string">scalar value string</a>) and a <dfn class="dfn-paneled" data-dfn-for="entry
 list" data-dfn-type="dfn" data-export id="entry-list-value">value</dfn> (either a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#scalar-value-string" id="ref-for-scalar-value-string①">scalar value string</a> or a <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/FileAPI/#dfn-file" id="ref-for-dfn-file">File</a></code>).</p>
-   <p class="XXX">These definitions currently live in the XHR spec as part of the <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata">FormData</a></code> definition, but they should probably be moved to HTML. <a data-link-type="biblio" href="#biblio-xhr">[XHR]</a> </p>
+   <p class="XXX">These definitions currently live in the XHR spec as part of the <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata">FormData</a></code> definition, but they should probably be moved to HTML as part of <a href="https://github.com/whatwg/html/issues/6701">HTML issue #6701</a>. <a data-link-type="biblio" href="#biblio-xhr">[XHR]</a> </p>
    <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="multipart-form-data"><code>multipart/form-data</code></dfn> format provides a way to encode an <a data-link-type="dfn" href="#entry-list" id="ref-for-entry-list">entry
 list</a>, which, unlike the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-urlencoded" id="ref-for-concept-urlencoded"><code>application/x-www-form-urlencoded</code></a> format, can transmit
 file contents.</p>
@@ -86,7 +86,7 @@ file contents.</p>
    <p>To <dfn class="dfn-paneled" data-dfn-for="multipart/form-data/boundary" data-dfn-type="dfn" data-export id="multipart-form-data-boundary-generate">generate</dfn> a <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary"><code>multipart/form-data</code> boundary</a>, return an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined">implementation-defined</a> byte sequence which fullfills the conditions for boundaries, such that
 part of it is randomly generated, with a minimum entropy of 95 bits.</p>
    <p class="note" role="note">Previous definitions of <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data①"><code>multipart/form-data</code></a> <span class="allow-2119">required</span> that the <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary①">boundary</a> associated with a <code>multipart/form-data</code> payload not be present anywhere in the payload other than as a
-delimiter, although they allow for generating the <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary②">boundary</a> probabilistically. Since this generation algorithm isseparate from a payload, however, it has to
+delimiter, although they allow for generating the <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary②">boundary</a> probabilistically. Since this generation algorithm is separate from a payload, however, it has to
 specify a minimum entropy instead. <a data-link-type="biblio" href="#biblio-rfc7578">[RFC7578]</a> <a data-link-type="biblio" href="#biblio-rfc2046">[RFC2046]</a> </p>
    <p class="note" role="note">If a user agent generates <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data②"><code>multipart/form-data</code></a> boundaries with a
 length of 27 and an entropy of 95 bits, given a payload made specifically to generate collisions
@@ -183,18 +183,13 @@ consisting of U+000D (CR) and U+000A (LF).</p>
     </ol>
    </div>
    <div class="XXX">
-    <p>This algorithm matches the behavior of all major browsers, except for the following bugs: </p>
+    <p>This algorithm matches the behavior of all major browsers, except for the following bug: </p>
     <ul>
-     <li data-md>
-      <p>Gecko’s <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a>, meaning
-that field names and filenames are escaped differently: line breaks (whether CR, LF, or CR LF)
-are escaped into a 0x20 whitespace byte, and double quotes are escaped by prepending a
-backslash. This was made illegal in <a href="https://github.com/whatwg/html/pull/6282">HTML PR
-#6282</a>. This bug is in the process of being fixed.</p>
      <li data-md>
       <p>Chromium’s <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue
 1167095</a>, meaning that field names and string values aren’t newline-normalized during the <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data③"><code>multipart/form-data</code></a> serialization – although that is only observable for
-entries not originating from form elements, since those are previously normalized in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#constructing-the-form-data-set" id="ref-for-constructing-the-form-data-set">construct the entry list</a> algorithm. This change of behavior is being spec’d in <a href="https://github.com/whatwg/html/pull/6287">HTML PR #6287</a>.</p>
+entries not originating from form elements, since those are previously normalized in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#constructing-the-form-data-set" id="ref-for-constructing-the-form-data-set">construct the entry list</a> algorithm. This change of behavior was spec’d in <a href="https://github.com/whatwg/html/pull/6287">HTML PR #6287</a> – see <a href="https://blog.whatwg.org/newline-normalizations-in-form-submission">this blog</a> for a
+more in-depth overview.</p>
     </ul>
    </div>
    <hr>
@@ -308,6 +303,22 @@ result of running the following steps:</p>
     </ol>
    </div>
    <h2 class="heading settled" data-level="3" id="parsing"><span class="secno">3. </span><span class="content"><code>multipart/form-data</code> parsing</span><a class="self-link" href="#parsing"></a></h2>
+   <div class="XXX">
+    <p>These algorithms are a first attempt at defining a <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data⑤"><code>multipart/form-data</code></a> parser for use in <code class="highlight"><a class="idl-code" data-link-type="interface" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body">Body</a><c- p>.</c->prototype<c- p>.</c-><a class="idl-code" data-link-type="method" href="https://fetch.spec.whatwg.org/#dom-body-formdata" id="ref-for-dom-body-formdata">formData</a><c- p>()</c-></code>.
+  The current algorithms don’t yet match any browser because their behavior disagrees at various
+  points. </p>
+    <p>Note that Gecko and Chromium also implement a Web Extensions API that parses <code>multipart/form-data</code> independently from the parser in <code class="idl"><a data-link-type="idl" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body①">Body</a></code> (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>): </p>
+<pre class="lang-js highlight" style="color: #666666">chrome<c- p>.</c->webRequest<c- p>.</c->onBeforeRequest<c- p>.</c->addListener<c- p>(</c->
+  <c- p>(</c->details<c- p>)</c-> <c- p>=></c-> <c- p>{</c->
+    <c- c1>// Returns an object mapping names to an array of values represented by</c->
+    <c- c1>// either the string value or by the file’s filename.</c->
+    console<c- p>.</c->log<c- p>(</c->details<c- p>.</c->requestBody<c- p>.</c->formData<c- p>);</c->
+  <c- p>},</c->
+  <c- p>{</c->urls<c- o>:</c-> <c- p>[</c-><c- u>"&lt;all_urls>"</c-><c- p>]},</c->
+  <c- p>[</c-><c- u>"requestBody"</c-><c- p>]</c->
+<c- p>);</c->
+</pre>
+   </div>
    <div class="algorithm" data-algorithm="multipart/form-data parser">
     <p>The <dfn data-dfn-type="dfn" data-export id="multipart-form-data-parser"><code>multipart/form-data</code> parser<a class="self-link" href="#multipart-form-data-parser"></a></dfn> takes a byte sequence <var>input</var> and a <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type">MIME type</a> <var>mimeType</var>, and returns either an <a data-link-type="dfn" href="#entry-list" id="ref-for-entry-list②">entry list</a> or failure:</p>
     <ol>
@@ -475,21 +486,6 @@ nothing with those bytes.)</p>
 failure. Otherwise, advance <var>position</var> by 2 (past the newline).</p>
       </ol>
     </ol>
-   </div>
-   <hr>
-   <div class="XXX">
-    <p>These algorithms are a first attempt at defining a <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data⑤"><code>multipart/form-data</code></a> parser, which doesn’t yet match any implementation of <code class="highlight"><a class="idl-code" data-link-type="interface" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body">Body</a><c- p>.</c->prototype<c- p>.</c-><a class="idl-code" data-link-type="method" href="https://fetch.spec.whatwg.org/#dom-body-formdata" id="ref-for-dom-body-formdata">formData</a><c- p>()</c-></code> because they disagree at various points. </p>
-    <p>Note that Gecko and Chromium also implement a Web Extensions API that parses <code>multipart/form-data</code> independently from the parser in <code class="idl"><a data-link-type="idl" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body①">Body</a></code> (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>): </p>
-<pre class="lang-js highlight" style="color: #666666">chrome<c- p>.</c->webRequest<c- p>.</c->onBeforeRequest<c- p>.</c->addListener<c- p>(</c->
-  <c- p>(</c->details<c- p>)</c-> <c- p>=></c-> <c- p>{</c->
-    <c- c1>// Returns an object mapping names to an array of values represented by</c->
-    <c- c1>// either the string value or by the file’s filename.</c->
-    console<c- p>.</c->log<c- p>(</c->details<c- p>.</c->requestBody<c- p>.</c->formData<c- p>);</c->
-  <c- p>},</c->
-  <c- p>{</c->urls<c- o>:</c-> <c- p>[</c-><c- u>"&lt;all_urls>"</c-><c- p>]},</c->
-  <c- p>[</c-><c- u>"requestBody"</c-><c- p>]</c->
-<c- p>);</c->
-</pre>
    </div>
    <h2 class="no-num heading settled" id="ipr"><span class="content">Intellectual property rights</span><a class="self-link" href="#ipr"></a></h2>
    <p>Copyright © WHATWG (Apple, Google, Mozilla, Microsoft). This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">Creative Commons Attribution 4.0

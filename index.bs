@@ -25,7 +25,8 @@ export for="entry list">name</dfn> (a [=scalar value string=]) and a <dfn export
 list">value</dfn> (either a [=scalar value string=] or a {{File}}).
 
 <p class="XXX">These definitions currently live in the XHR spec as part of the {{FormData}}
-definition, but they should probably be moved to HTML. [[XHR]]
+definition, but they should probably be moved to HTML as part of <a
+href="https://github.com/whatwg/html/issues/6701">HTML issue #6701</a>. [[XHR]]
 
 The <dfn export><code>multipart/form-data</code></dfn> format provides a way to encode an [=entry
 list=], which, unlike the <a><code>application/x-www-form-urlencoded</code></a> format, can transmit
@@ -50,7 +51,7 @@ part of it is randomly generated, with a minimum entropy of 95 bits.
 class="allow-2119">required</span> that the [=multipart/form-data/boundary=] associated with a
 <code>multipart/form-data</code> payload not be present anywhere in the payload other than as a
 delimiter, although they allow for generating the [=multipart/form-data/boundary=]
-probabilistically. Since this generation algorithm isseparate from a payload, however, it has to
+probabilistically. Since this generation algorithm is separate from a payload, however, it has to
 specify a minimum entropy instead. [[RFC7578]] [[RFC2046]]
 
 <p class="note">If a user agent generates <a><code>multipart/form-data</code></a> boundaries with a
@@ -128,19 +129,16 @@ of chunks, each of which can be either a byte sequence or a {{File}}:
 </div>
 
 <div class="XXX">
-<p>This algorithm matches the behavior of all major browsers, except for the following bugs:
+<p>This algorithm matches the behavior of all major browsers, except for the following bug:
 
--   Gecko's <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1686765">bug 1686765</a>, meaning
-    that field names and filenames are escaped differently: line breaks (whether CR, LF, or CR LF)
-    are escaped into a 0x20 whitespace byte, and double quotes are escaped by prepending a
-    backslash. This was made illegal in <a href="https://github.com/whatwg/html/pull/6282">HTML PR
-    #6282</a>. This bug is in the process of being fixed.
 -   Chromium's <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue
     1167095</a>, meaning that field names and string values aren't newline-normalized during the
     <a><code>multipart/form-data</code></a> serialization – although that is only observable for
     entries not originating from form elements, since those are previously normalized in the
-    [=construct the entry list=] algorithm. This change of behavior is being spec'd in <a
-    href="https://github.com/whatwg/html/pull/6287">HTML PR #6287</a>.
+    [=construct the entry list=] algorithm. This change of behavior was spec'd in <a
+    href="https://github.com/whatwg/html/pull/6287">HTML PR #6287</a> – see <a
+    href="https://blog.whatwg.org/newline-normalizations-in-form-submission">this blog</a> for a
+    more in-depth overview.
 
 </div>
 
@@ -209,6 +207,30 @@ To <dfn export>create a <code>multipart/form-data</code> readable stream</dfn> f
 
 <code>multipart/form-data</code> parsing {#parsing}
 ===================================================
+
+<div class="XXX">
+  <p>These algorithms are a first attempt at defining a <a><code>multipart/form-data</code></a>
+  parser for use in
+  <code highlight="js"><a interface>Body</a>.prototype.<a method for="Body">formData</a>()</code>.
+  The current algorithms don't yet match any browser because their behavior disagrees at various
+  points.
+
+  <p>Note that Gecko and Chromium also implement a Web Extensions API that parses
+  <code>multipart/form-data</code> independently from the parser in {{Body}} (see <a
+  href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>):
+
+  <xmp class="lang-js" style="color: #666666">
+    chrome.webRequest.onBeforeRequest.addListener(
+      (details) => {
+        // Returns an object mapping names to an array of values represented by
+        // either the string value or by the file's filename.
+        console.log(details.requestBody.formData);
+      },
+      {urls: ["<all_urls>"]},
+      ["requestBody"]
+    );
+  </xmp>
+</div>
 
 <div algorithm="multipart/form-data parser">
 
@@ -321,29 +343,4 @@ ignore>input</var> and a pointer into it |position|, run the following steps:
     1.  If |position| does not point to a sequence of bytes starting with 0x0D 0x0A (CR LF), return
         failure. Otherwise, advance |position| by 2 (past the newline).
 
-</div>
-
-<hr>
-
-<div class="XXX">
-  <p>These algorithms are a first attempt at defining a <a><code>multipart/form-data</code></a>
-  parser, which doesn't yet match any implementation of
-  <code highlight="js"><a interface>Body</a>.prototype.<a method for="Body">formData</a>()</code>
-  because they disagree at various points.
-
-  <p>Note that Gecko and Chromium also implement a Web Extensions API that parses
-  <code>multipart/form-data</code> independently from the parser in {{Body}} (see <a
-  href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>):
-
-  <xmp class="lang-js" style="color: #666666">
-    chrome.webRequest.onBeforeRequest.addListener(
-      (details) => {
-        // Returns an object mapping names to an array of values represented by
-        // either the string value or by the file's filename.
-        console.log(details.requestBody.formData);
-      },
-      {urls: ["<all_urls>"]},
-      ["requestBody"]
-    );
-  </xmp>
 </div>

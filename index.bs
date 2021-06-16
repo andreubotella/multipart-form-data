@@ -70,7 +70,7 @@ name">|isFilename|</dfn> (default false):
 1.  If |isFilename| is true:
     1.  Set |name| to the result of [=string/converting=] |name| into a [=scalar value string=].
 
-    Otherwise:
+1.  Otherwise:
     1.  [=Assert=]: |name| is a [=scalar value string=].
     1.  Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every occurrence of
         U+000A (LF) not preceded by U+000D (CR), in |name|, by a string consisting of U+000D (CR)
@@ -109,7 +109,7 @@ of chunks, each of which can be either a byte sequence or a {{File}}:
         1.  Append 0x0D 0x0A (CR LF) to |chunk|.
         1.  Append |chunk| to |output chunks|.
 
-        Otherwise:
+    1.  Otherwise:
         1.  [=Assert=]: |value| is a {{File}}.
         1.  Append `<code>; filename="</code>`, followed by the result of <a>escaping a
             <code>multipart/form-data</code> name</a> given |value|'s {{File/name}} with |encoding|
@@ -155,7 +155,7 @@ result of running the following steps:
     1.  If |chunk| is a byte sequence:
         1.  Increase |length| by |chunk|'s length.
 
-        Otherwise:
+    1.  Otherwise:
         1.  [=Assert=]: |chunk| is a {{File}}.
         1.  Increase |length| by |chunk|'s {{Blob/size}}.
 1.  Return |length|.
@@ -278,7 +278,7 @@ The <dfn export><code>multipart/form-data</code> parser</dfn> takes a byte seque
         1.  Let |value| be a new {{File}} object with name |filename|, type |contentType|, and body
             |body|.
 
-        Otherwise:
+    1.  Otherwise:
         1.  Let |value| be the [=UTF-8 decode without BOM|UTF-8 decoding without BOM=] of |body|.
     1.  Add |name| / |value| to |entry list|.
 

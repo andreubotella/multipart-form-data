@@ -210,10 +210,8 @@ To <dfn export>create a <code>multipart/form-data</code> readable stream</dfn> f
 
 <div class="XXX">
   <p>These algorithms are a first attempt at defining a <a><code>multipart/form-data</code></a>
-  parser for use in
-  <code highlight="js"><a interface>Body</a>.prototype.<a method for="Body">formData</a>()</code>.
-  The current algorithms don't yet match any browser because their behavior disagrees at various
-  points.
+  parser for use in {{Body}}'s {{Body/formData()}} method. The current algorithms don't yet match
+  any browser because their behavior disagrees at various points.
 
   <p>Note that Gecko and Chromium also implement a Web Extensions API that parses
   <code>multipart/form-data</code> independently from the parser in {{Body}} (see <a

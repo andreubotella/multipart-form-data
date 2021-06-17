@@ -11,7 +11,7 @@
 <script async crossorigin src="https://resources.whatwg.org/file-issue.js"></script>
 <script async crossorigin src="https://resources.whatwg.org/commit-snapshot-shortcut-key.js"></script>
 <script crossorigin defer src="https://resources.whatwg.org/standard-mdn-annos.js"></script>
-  <meta content="Bikeshed version 21183bac3, updated Tue Jun 15 10:19:19 2021 -0700" name="generator">
+  <meta content="Bikeshed version 3d6a6fcbb, updated Wed Jun 16 16:19:39 2021 -0700" name="generator">
 <style>/* style-var-click-highlighting */
 
     var { cursor: pointer; }
@@ -28,7 +28,7 @@
     <a class="logo" href="https://whatwg.org/"> <img alt="WHATWG" crossorigin height="100" src="https://resources.whatwg.org/logo.svg"> </a> 
    <hgroup>
     <h1 class="p-name no-ref" id="title"><code>multipart/form-data</code></h1>
-    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-06-16">16 June 2021</time></span></h2>
+    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-06-17">17 June 2021</time></span></h2>
    </hgroup>
    <div data-fill-with="spec-metadata">
     <dl>
@@ -307,9 +307,8 @@ result of running the following steps:</p>
    </div>
    <h2 class="heading settled" data-level="3" id="parsing"><span class="secno">3. </span><span class="content"><code>multipart/form-data</code> parsing</span><a class="self-link" href="#parsing"></a></h2>
    <div class="XXX">
-    <p>These algorithms are a first attempt at defining a <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data⑤"><code>multipart/form-data</code></a> parser for use in <code class="highlight"><a class="idl-code" data-link-type="interface" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body">Body</a><c- p>.</c->prototype<c- p>.</c-><a class="idl-code" data-link-type="method" href="https://fetch.spec.whatwg.org/#dom-body-formdata" id="ref-for-dom-body-formdata">formData</a><c- p>()</c-></code>.
-  The current algorithms don’t yet match any browser because their behavior disagrees at various
-  points. </p>
+    <p>These algorithms are a first attempt at defining a <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data⑤"><code>multipart/form-data</code></a> parser for use in <code class="idl"><a data-link-type="idl" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body">Body</a></code>'s <code class="idl"><a data-link-type="idl" href="https://fetch.spec.whatwg.org/#dom-body-formdata" id="ref-for-dom-body-formdata">formData()</a></code> method. The current algorithms don’t yet match
+  any browser because their behavior disagrees at various points. </p>
     <p>Note that Gecko and Chromium also implement a Web Extensions API that parses <code>multipart/form-data</code> independently from the parser in <code class="idl"><a data-link-type="idl" href="https://fetch.spec.whatwg.org/#body" id="ref-for-body①">Body</a></code> (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1697292">Gecko bug 1697292</a>): </p>
 <pre class="lang-js highlight" style="color: #666666">chrome<c- p>.</c->webRequest<c- p>.</c->onBeforeRequest<c- p>.</c->addListener<c- p>(</c->
   <c- p>(</c->details<c- p>)</c-> <c- p>=></c-> <c- p>{</c->

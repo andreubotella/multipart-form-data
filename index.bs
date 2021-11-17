@@ -128,19 +128,7 @@ of chunks, each of which can be either a byte sequence or a {{File}}:
 
 </div>
 
-<div class="XXX">
-<p>This algorithm matches the behavior of all major browsers, except for the following bug:
-
--   Chromium's <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1167095">issue
-    1167095</a>, meaning that field names and string values aren't newline-normalized during the
-    <a><code>multipart/form-data</code></a> serialization – although that is only observable for
-    entries not originating from form elements, since those are previously normalized in the
-    [=construct the entry list=] algorithm. This change of behavior was spec'd in <a
-    href="https://github.com/whatwg/html/pull/6287">HTML PR #6287</a> – see <a
-    href="https://blog.whatwg.org/newline-normalizations-in-form-submission">this blog</a> for a
-    more in-depth overview.
-
-</div>
+<p class="note">This algorithm now matches the behavior of all major browsers.</p>
 
 <hr>
 

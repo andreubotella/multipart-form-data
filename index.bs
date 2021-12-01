@@ -8,29 +8,13 @@ Text Macro: TWITTER (unused)
 Text Macro: LOGO https://resources.whatwg.org/logo.svg
 Metadata Include: Participate off, Commits off, Tests off
 !Repository: <a href=https://github.com/andreubotella/multipart-form-data>GitHub</a>
-Abstract: A web-spec definition of the <a><code>multipart/form-data</code></a> format and related
-          algorithms, meant for inclusion in the WHATWG standards.
+Abstract: A web-spec definition of the <dfn export><code>multipart/form-data</code></dfn> format and
+          related algorithms, meant for inclusion in the WHATWG standards.
 </pre>
 
 <pre class="anchors">
 url:https://httpwg.org/specs/rfc7230.html#header.fields;text:field-name;type:dfn;spec:http
 </pre>
-
-Introduction {#intro}
-=====================
-
-An <dfn export>entry list</dfn> is a list of [=entry list/entries=], typically representing the
-contents of a form. An <dfn export for="entry list">entry</dfn> is a tuple consisting of a <dfn
-export for="entry list">name</dfn> (a [=scalar value string=]) and a <dfn export for="entry
-list">value</dfn> (either a [=scalar value string=] or a {{File}}).
-
-<p class="XXX">These definitions currently live in the XHR spec as part of the {{FormData}}
-definition, but they should probably be moved to HTML as part of <a
-href="https://github.com/whatwg/html/issues/6701">HTML issue #6701</a>. [[XHR]]
-
-The <dfn export><code>multipart/form-data</code></dfn> format provides a way to encode an [=entry
-list=], which, unlike the <a><code>application/x-www-form-urlencoded</code></a> format, can transmit
-file contents.
 
 <code>multipart/form-data</code> serializing {#serializing}
 ===========================================================
@@ -84,7 +68,7 @@ name">|isFilename|</dfn> (default false):
 
 <div algorithm="multipart/form-data chunk serializer">
 
-The <dfn export><code>multipart/form-data</code> chunk serializer</dfn> takes an [=entry list=]
+The <dfn export><code>multipart/form-data</code> chunk serializer</dfn> takes an [=/entry list=]
 |entries| and an optional [=/encoding=] |encoding| (default [=UTF-8=]), and returns a tuple of a
 <a for="multipart/form-data" lt="boundary"><code>multipart/form-data</code> boundary</a> and a list
 of chunks, each of which can be either a byte sequence or a {{File}}:
@@ -97,9 +81,9 @@ of chunks, each of which can be either a byte sequence or a {{File}}:
     1.  Let |chunk| be a byte sequence containing `<code>--</code>`, followed by |boundary|,
         followed by 0x0D 0x0A (CR LF).
     1.  Append `<code>Content-Disposition: form-data; name="</code>`, followed by the result of
-        <a>escaping a <code>multipart/form-data</code> name</a> given |entry|'s [=entry list/name=]
-        and |encoding|, followed by 0x22 ("), to |chunk|.
-    1.  Let |value| be |entry|'s [=entry list/value=].
+        <a>escaping a <code>multipart/form-data</code> name</a> given |entry|'s
+        [=entry list/entry/name=] and |encoding|, followed by 0x22 ("), to |chunk|.
+    1.  Let |value| be |entry|'s [=entry list/entry/value=].
     1.  If |value| is a string:
         1.  Append 0x0D 0x0A 0x0D 0x0A (CR LF CR LF) to |chunk|.
         1.  Replace every occurrence of U+000D (CR) not followed by U+000A (LF), and every
@@ -221,7 +205,7 @@ To <dfn export>create a <code>multipart/form-data</code> readable stream</dfn> f
 <div algorithm="multipart/form-data parser">
 
 The <dfn export><code>multipart/form-data</code> parser</dfn> takes a byte sequence |input| and a
-[=MIME type=] |mimeType|, and returns either an [=entry list=] or failure:
+[=MIME type=] |mimeType|, and returns either an [=/entry list=] or failure:
 
 1.  [=Assert=]: |mimeType|'s [=essence=] is "<code>multipart/form-data</code>".
 1.  If |mimeType|'s [=MIME type/parameters=]["<code>boundary</code>"] does not [=map/exist=], return
@@ -234,7 +218,7 @@ The <dfn export><code>multipart/form-data</code> parser</dfn> takes a byte seque
     href="https://github.com/whatwg/mimesniff/issues/141">whatwg/mimesniff issue #141</a>. Gecko and
     WebKit accept non-ASCII boundary strings and then expect them [=UTF-8 encoded=] in the request
     body; Chromium rejects them instead.
-1.  Let |entry list| be an empty [=entry list=].
+1.  Let |entry list| be an empty [=/entry list=].
 1.  Let |position| be a pointer to a byte in |input|, initially pointing at the first byte.
 1.  While true:
     1.  If |position| points to a sequence of bytes starting with 0x2D 0x2D (`<code>--</code>`)
@@ -266,7 +250,10 @@ The <dfn export><code>multipart/form-data</code> parser</dfn> takes a byte seque
 
     1.  Otherwise:
         1.  Let |value| be the [=UTF-8 decode without BOM|UTF-8 decoding without BOM=] of |body|.
-    1.  Add |name| / |value| to |entry list|.
+    1.  Assert: |name| is a [=scalar value string=] and |value| is either a [=scalar value string=]
+        or a {{File}} object.
+    1.  [=entry list/Create an entry=] with |name| and |value|, and [=list/append=] it to
+        |entry list|.
 
 </div>
 

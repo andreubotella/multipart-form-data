@@ -12,7 +12,7 @@
 <script async crossorigin src="https://resources.whatwg.org/commit-snapshot-shortcut-key.js"></script>
 <script crossorigin defer src="https://resources.whatwg.org/standard-mdn-annos.js"></script>
   <meta content="Bikeshed version 26e85e599, updated Thu Dec 8 15:29:31 2022 -0800" name="generator">
-  <meta content="8d3a69926391dea0f7b85594f69788eda77f4f1f" name="document-revision">
+  <meta content="d9f0abbaca0d7dee1d08a5f0ed0dcc7fd85d3165" name="document-revision">
 <style>/* style-issues */
 
 a[href].issue-return {
@@ -440,12 +440,8 @@ nothing with those bytes.)</p>
             <p>Advance <var>position</var> so it points at the byte after the next 0x22 (") byte (the one in
 the sequence of bytes matched above).</p>
            <li data-md>
-            <p>Set <var>name</var> to the <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-decode-without-bom" id="ref-for-utf-8-decode-without-bom①">UTF-8 decoding without BOM</a> of the
-result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR) or 0x22
-("), given <var>position</var>.</p>
-            <p class="XXX">The parsing of names and filenames is being worked on in <a href="http://github.com/andreubotella/multipart-form-data/issues/1">issue #1</a>. </p>
-           <li data-md>
-            <p>If the byte at <var>position</var> is not 0x22 ("), return failure. Otherwise, advance <var>position</var> by 1.</p>
+            <p>Set <var>name</var> to the result of <a data-link-type="dfn" href="#parse-a-multipart-form-data-name" id="ref-for-parse-a-multipart-form-data-name">parsing a <code>multipart/form-data</code> name</a> given <var>input</var> and <var>position</var>, if the result is not failure. Otherwise, return
+failure.</p>
            <li data-md>
             <p>If <var>position</var> points to a sequence of bytes starting with
 `<code>; filename="</code>`:</p>
@@ -454,13 +450,8 @@ result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR) or 0x
               <p>Advance <var>position</var> so it points at the byte after the next 0x22 (") byte (the
 one in the sequence of bytes matched above).</p>
              <li data-md>
-              <p>Set <var>filename</var> to the <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-decode-without-bom" id="ref-for-utf-8-decode-without-bom②">UTF-8 decoding without BOM</a> of
-the result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR)
-or 0x22 ("), given <var>position</var>.</p>
-              <p class="XXX">The parsing of names and filenames is being worked on in <a href="http://github.com/andreubotella/multipart-form-data/issues/1">issue
-#1</a>. </p>
-             <li data-md>
-              <p>If the byte at <var>position</var> is not 0x22 ("), return failure. Otherwise, advance <var>position</var> by 1.</p>
+              <p>Set <var>filename</var> to the result of <a data-link-type="dfn" href="#parse-a-multipart-form-data-name" id="ref-for-parse-a-multipart-form-data-name①">parsing a <code>multipart/form-data</code> name</a> given <var>input</var> and <var>position</var>, if the result is not failure. Otherwise,
+return failure.</p>
             </ol>
           </ol>
          <dt data-md>`<code>content-type</code>`
@@ -485,6 +476,36 @@ failure. Otherwise, advance <var>position</var> by 2 (past the newline).</p>
       </ol>
     </ol>
    </div>
+   <div class="algorithm" data-algorithm="parse multipart/form-data names">
+    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="parse-a-multipart-form-data-name">parse a <code>multipart/form-data</code> name</dfn>, given a byte sequence <var>input</var> and a pointer into it <var>position</var>, run the following steps:</p>
+    <ol>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑤">Assert</a>: The byte at (<var>position</var> - 1) is 0x22 (").</p>
+     <li data-md>
+      <p>Let <var>name</var> be the result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR)
+or 0x22 ("), given <var>position</var>.</p>
+     <li data-md>
+      <p>If the byte at <var>position</var> is not 0x22 ("), return failure. Otherwise, advance <var>position</var> by 1.</p>
+     <li data-md>
+      <p>Replace any occurrence of the following subsequences in <var>name</var> with the given byte:</p>
+      <dl>
+       <dt data-md>`<code>%0A</code>`
+       <dd data-md>
+        <p>0x0A (LF)</p>
+       <dt data-md>`<code>%0D</code>`
+       <dd data-md>
+        <p>0x0D (CR)</p>
+       <dt data-md>`<code>%22</code>`
+       <dd data-md>
+        <p>0x22 (")</p>
+      </dl>
+     <li data-md>
+      <p>Return the <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-decode-without-bom" id="ref-for-utf-8-decode-without-bom①">UTF-8 decoding without BOM</a> of <var>name</var>.</p>
+    </ol>
+    <p class="XXX">This is the way parsing of files and filenames should ideally work. It is not how it
+currently works in browsers. See <a href="http://github.com/andreubotella/multipart-form-data/issues/1">issue #1</a> for more
+details. </p>
+   </div>
    <h2 class="no-num heading settled" id="ipr"><span class="content">Intellectual property rights</span><a class="self-link" href="#ipr"></a></h2>
    <p>Copyright © WHATWG (Apple, Google, Mozilla, Microsoft). This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">Creative Commons Attribution 4.0
 International License</a>. To the extent portions of it are incorporated into source code, such
@@ -508,6 +529,7 @@ if ("serviceWorker" in navigator) {
    <li><a href="#multipart-form-data">multipart/form-data</a><span>, in § Unnumbered section</span>
    <li><a href="#multipart-form-data-chunk-serializer">multipart/form-data chunk serializer</a><span>, in § 1</span>
    <li><a href="#multipart-form-data-parser">multipart/form-data parser</a><span>, in § 2</span>
+   <li><a href="#parse-a-multipart-form-data-name">parse a multipart/form-data name</a><span>, in § 2</span>
    <li><a href="#parse-multipart-form-data-headers">parse multipart/form-data headers</a><span>, in § 2</span>
   </ul>
   <aside class="dfn-panel" data-for="term-for-encode">
@@ -543,7 +565,7 @@ if ("serviceWorker" in navigator) {
   <aside class="dfn-panel" data-for="term-for-utf-8-decode-without-bom">
    <a href="https://encoding.spec.whatwg.org/#utf-8-decode-without-bom">https://encoding.spec.whatwg.org/#utf-8-decode-without-bom</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-utf-8-decode-without-bom">2. multipart/form-data parsing</a> <a href="#ref-for-utf-8-decode-without-bom①">(2)</a> <a href="#ref-for-utf-8-decode-without-bom②">(3)</a>
+    <li><a href="#ref-for-utf-8-decode-without-bom">2. multipart/form-data parsing</a> <a href="#ref-for-utf-8-decode-without-bom①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-utf-8-encode">
@@ -654,7 +676,7 @@ if ("serviceWorker" in navigator) {
    <a href="https://infra.spec.whatwg.org/#assert">https://infra.spec.whatwg.org/#assert</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-assert">1. multipart/form-data serializing</a> <a href="#ref-for-assert①">(2)</a> <a href="#ref-for-assert②">(3)</a> <a href="#ref-for-assert③">(4)</a>
-    <li><a href="#ref-for-assert④">2. multipart/form-data parsing</a>
+    <li><a href="#ref-for-assert④">2. multipart/form-data parsing</a> <a href="#ref-for-assert⑤">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-byte-sequence">
@@ -1021,6 +1043,12 @@ if ("serviceWorker" in navigator) {
    <b><a href="#parse-multipart-form-data-headers">#parse-multipart-form-data-headers</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-parse-multipart-form-data-headers">2. multipart/form-data parsing</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="parse-a-multipart-form-data-name">
+   <b><a href="#parse-a-multipart-form-data-name">#parse-a-multipart-form-data-name</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-parse-a-multipart-form-data-name">2. multipart/form-data parsing</a> <a href="#ref-for-parse-a-multipart-form-data-name①">(2)</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */

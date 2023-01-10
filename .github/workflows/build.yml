@@ -11,8 +11,9 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
+    - run: pip install bikeshed && bikeshed update
     - name: Build
-      run: make remote && mkdir out && mv index.html out/
+      run: make local && mkdir out && mv index.html out/
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       with:

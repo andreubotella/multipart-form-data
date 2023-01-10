@@ -284,27 +284,16 @@ ignore>input</var> and a pointer into it |position|, run the following steps:
                 `<code>form-data; name="</code>`, return failure.
             1.  Advance |position| so it points at the byte after the next 0x22 (") byte (the one in
                 the sequence of bytes matched above).
-            1.  Set |name| to the [=UTF-8 decode without BOM|UTF-8 decoding without BOM=] of the
-                result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR) or 0x22
-                ("), given |position|.
-
-                <p class=XXX>The parsing of names and filenames is being worked on in <a
-                href="http://github.com/andreubotella/multipart-form-data/issues/1">issue #1</a>.
-            1.  If the byte at |position| is not 0x22 ("), return failure. Otherwise, advance
-                |position| by 1.
+            1.  Set |name| to the result of <a>parsing a <code>multipart/form-data</code> name</a>
+                given |input| and |position|, if the result is not failure. Otherwise, return
+                failure.
             1.  If |position| points to a sequence of bytes starting with
                 `<code>; filename="</code>`:
                 1.  Advance |position| so it points at the byte after the next 0x22 (") byte (the
                     one in the sequence of bytes matched above).
-                1.  Set |filename| to the [=UTF-8 decode without BOM|UTF-8 decoding without BOM=] of
-                    the result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR)
-                    or 0x22 ("), given |position|.
-
-                    <p class=XXX>The parsing of names and filenames is being worked on in <a
-                    href="http://github.com/andreubotella/multipart-form-data/issues/1">issue
-                    #1</a>.
-                1.  If the byte at |position| is not 0x22 ("), return failure. Otherwise, advance
-                    |position| by 1.
+                1.  Set |filename| to the result of <a>parsing a <code>multipart/form-data</code>
+                    name</a> given |input| and |position|, if the result is not failure. Otherwise,
+                    return failure.
         : `<code>content-type</code>`
         ::  1.  Let |header value| be the result of collecting a sequence of bytes that are not 0x0A
                 (LF) or 0x0D (CR), given |position|.
@@ -315,5 +304,31 @@ ignore>input</var> and a pointer into it |position|, run the following steps:
             nothing with those bytes.)
     1.  If |position| does not point to a sequence of bytes starting with 0x0D 0x0A (CR LF), return
         failure. Otherwise, advance |position| by 2 (past the newline).
+
+</div>
+
+<div algorithm="parse multipart/form-data names">
+
+To <dfn>parse a <code>multipart/form-data</code> name</dfn>, given a byte sequence <var
+ignore>input</var> and a pointer into it |position|, run the following steps:
+
+    1.  [=Assert=]: The byte at (|position| - 1) is 0x22 (").
+    1.  Let |name| be the result of collecting a sequence of bytes that are not 0x0A (LF), 0x0D (CR)
+        or 0x22 ("), given |position|.
+    1.  If the byte at |position| is not 0x22 ("), return failure. Otherwise, advance |position|
+        by 1.
+    1.  Replace any occurrence of the following subsequences in |name| with the given byte:
+        : `<code>%0A</code>`
+        :: 0x0A (LF)
+        : `<code>%0D</code>`
+        :: 0x0D (CR)
+        : `<code>%22</code>`
+        :: 0x22 (")
+    1.  Return the [=UTF-8 decode without BOM|UTF-8 decoding without BOM=] of |name|.
+
+<p class="XXX">This is the way parsing of files and filenames should ideally work. It is not how it
+currently works in browsers. See
+<a href="http://github.com/andreubotella/multipart-form-data/issues/1">issue #1</a> for more
+details.
 
 </div>

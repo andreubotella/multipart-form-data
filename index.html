@@ -11,7 +11,8 @@
 <script async crossorigin src="https://resources.whatwg.org/file-issue.js"></script>
 <script async crossorigin src="https://resources.whatwg.org/commit-snapshot-shortcut-key.js"></script>
 <script crossorigin defer src="https://resources.whatwg.org/standard-mdn-annos.js"></script>
-  <meta content="Bikeshed version bbc364800, updated Mon Nov 15 13:57:55 2021 -0800" name="generator">
+  <meta content="Bikeshed version 26e85e599, updated Thu Dec 8 15:29:31 2022 -0800" name="generator">
+  <meta content="8d3a69926391dea0f7b85594f69788eda77f4f1f" name="document-revision">
 <style>/* style-issues */
 
 a[href].issue-return {
@@ -38,7 +39,7 @@ a[href].issue-return {
     <a class="logo" href="https://whatwg.org/"> <img alt="WHATWG" crossorigin height="100" src="https://resources.whatwg.org/logo.svg"> </a> 
    <hgroup>
     <h1 class="p-name no-ref" id="title"><code>multipart/form-data</code></h1>
-    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2021-12-01">1 December 2021</time></span></h2>
+    <p id="subtitle">A Collection of Interesting Ideas — Last Updated <time class="dt-updated" datetime="2023-01-10">10 January 2023</time> </p>
    </hgroup>
    <div data-fill-with="spec-metadata">
     <dl>
@@ -88,7 +89,7 @@ a[href].issue-return {
 part of it is randomly generated, with a minimum entropy of 95 bits.</p>
    <p class="note" role="note">Previous definitions of <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data"><code>multipart/form-data</code></a> <span class="allow-2119">required</span> that the <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary①">boundary</a> associated with a <code>multipart/form-data</code> payload not be present anywhere in the payload other than as a
 delimiter, although they allow for generating the <a data-link-type="dfn" href="#multipart-form-data-boundary" id="ref-for-multipart-form-data-boundary②">boundary</a> probabilistically. Since this generation algorithm is separate from a payload, however, it has to
-specify a minimum entropy instead. <a data-link-type="biblio" href="#biblio-rfc7578">[RFC7578]</a> <a data-link-type="biblio" href="#biblio-rfc2046">[RFC2046]</a> </p>
+specify a minimum entropy instead. <a data-link-type="biblio" href="#biblio-rfc7578" title="Returning Values from Forms: multipart/form-data">[RFC7578]</a> <a data-link-type="biblio" href="#biblio-rfc2046" title="Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">[RFC2046]</a> </p>
    <p class="note" role="note">If a user agent generates <a data-link-type="dfn" href="#multipart-form-data" id="ref-for-multipart-form-data①"><code>multipart/form-data</code></a> boundaries with a
 length of 27 and an entropy of 95 bits, given a payload made specifically to generate collisions
 with that user agent’s boundaries, the expected length of the payload before a collision is found is
@@ -321,7 +322,7 @@ result of running the following steps:</p>
      <li data-md>
       <p>If <var>mimeType</var>’s <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parameters" id="ref-for-parameters">parameters</a>["<code>boundary</code>"] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exist</a>, return
 failure. Otherwise, let <var>boundary</var> be the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-decode" id="ref-for-utf-8-decode">UTF-8 decoding</a> <var>mimeType</var>’s <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parameters" id="ref-for-parameters①">parameters</a>["<code>boundary</code>"].</p>
-      <p class="XXX">The definition of <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type①">MIME type</a> in <a data-link-type="biblio" href="#biblio-mimesniff">[MIMESNIFF]</a> has the <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parameters" id="ref-for-parameters②">parameter</a> values being <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ascii-string" id="ref-for-ascii-string">ASCII strings</a>, but the <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parse-a-mime-type" id="ref-for-parse-a-mime-type">parse a MIME type</a> algorithm can
+      <p class="XXX">The definition of <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type①">MIME type</a> in <a data-link-type="biblio" href="#biblio-mimesniff" title="MIME Sniffing Standard">[MIMESNIFF]</a> has the <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parameters" id="ref-for-parameters②">parameter</a> values being <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ascii-string" id="ref-for-ascii-string">ASCII strings</a>, but the <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parse-a-mime-type" id="ref-for-parse-a-mime-type">parse a MIME type</a> algorithm can
 create <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type②">MIME type records</a> containing non-ASCII parameter values. See <a href="https://github.com/whatwg/mimesniff/issues/141">whatwg/mimesniff issue #141</a>. Gecko and
 WebKit accept non-ASCII boundary strings and then expect them <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-encode" id="ref-for-utf-8-encode">UTF-8 encoded</a> in the request
 body; Chromium rejects them instead. </p>
@@ -899,7 +900,7 @@ if ("serviceWorker" in navigator) {
      <li><span class="dfn-paneled" id="term-for-form-entry-value">value</span>
     </ul>
    <li>
-    <a data-link-type="biblio">[http]</a> defines the following terms:
+    <a data-link-type="biblio">[HTTP]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-header.fields">field-name</span>
     </ul>
@@ -966,7 +967,7 @@ if ("serviceWorker" in navigator) {
    <dt id="biblio-fetch">[FETCH]
    <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/"><cite>Fetch Standard</cite></a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
    <dt id="biblio-fileapi">[FileAPI]
-   <dd>Marijn Kruisselbrink; Arun Ranganathan. <a href="https://w3c.github.io/FileAPI/"><cite>File API</cite></a>. URL: <a href="https://w3c.github.io/FileAPI/">https://w3c.github.io/FileAPI/</a>
+   <dd>Marijn Kruisselbrink. <a href="https://w3c.github.io/FileAPI/"><cite>File API</cite></a>. URL: <a href="https://w3c.github.io/FileAPI/">https://w3c.github.io/FileAPI/</a>
    <dt id="biblio-html">[HTML]
    <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/"><cite>HTML Standard</cite></a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-infra">[INFRA]
@@ -1080,12 +1081,13 @@ document.body.addEventListener("click", function(e) {
 </script>
 <script>/* script-var-click-highlighting */
 
-    document.addEventListener("click", e=>{
-        if(e.target.nodeName == "VAR") {
-            highlightSameAlgoVars(e.target);
-        }
-    });
+    "use strict";
     {
+        document.addEventListener("click", e=>{
+            if(e.target.nodeName == "VAR") {
+                highlightSameAlgoVars(e.target);
+            }
+        });
         const indexCounts = new Map();
         const indexNames = new Map();
         function highlightSameAlgoVars(v) {
